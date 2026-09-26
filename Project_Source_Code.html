@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSwap - Sample Source Code</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Syntax Highlighting (Highlight.js) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/sql.min.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px;
+            background: #fff;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        h1 { color: #1a1a2e; font-size: 26px; margin-bottom: 10px; }
+        h2 { color: #6c63ff; font-size: 20px; margin-top: 40px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        h3 { color: #444; font-size: 16px; margin-top: 25px; margin-bottom: 10px; }
+        
+        .file-name {
+            display: inline-block;
+            background: #f1f3f5;
+            padding: 4px 10px;
+            border-radius: 6px 6px 0 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            color: #495057;
+            border: 1px solid #dee2e6;
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        pre {
+            margin-top: 0;
+            border-radius: 0 8px 8px 8px !important;
+            border: 1px solid #dee2e6;
+            background: #f8f9fa !important;
+        }
+        
+        code {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+        }
+
+        .desc {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        /* Print Specific Styles */
+        @media print {
+            body { padding: 0; }
+            .no-print { display: none; }
+            pre { page-break-inside: avoid; }
+            h2, h3, .file-name { page-break-after: avoid; }
+        }
+
+        .print-btn {
+            display: block;
+            width: 200px;
+            margin: 0 auto 30px;
+            padding: 12px 24px;
+            background: #6c63ff;
+            color: white;
+            text-align: center;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+        .print-btn:hover { background: #5a52d5; }
+    </style>
+</head>
+<body>
+
+    <button class="print-btn no-print" onclick="window.print()">📥 Save as PDF</button>
+
+    <div class="header">
+        <h1>SkillSwap Platform</h1>
+        <p>Appendix: Sample Source Code</p>
+    </div>
+
+    <!-- Section 1: Database -->
+    <h2>1. Database Schema (MySQL)</h2>
+    <p class="desc">Core relational database tables defining users, skills, and the learning session progress tracking system.</p>
+    
+    <div class="file-name">config/schema.sql (Excerpt)</div>
+    <pre><code class="language-sql">
+CREATE TABLE IF NOT EXISTS users (
+    id           INT          NOT NULL AUTO_INCREMENT,
+    firebase_uid VARCHAR(128) NOT NULL UNIQUE,
+    name         VARCHAR(100) NOT NULL,
+    email        VARCHAR(200) NOT NULL,
+    created_at   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    is_online    TINYINT(1)   DEFAULT 0,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS learning_progress (
+    id                  INT  NOT NULL AUTO_INCREMENT,
+    user_id             INT  NOT NULL,
+    skill_id            INT  NOT NULL,
+    sessions_completed  INT  NOT NULL DEFAULT 0,
+    total_time          INT  NOT NULL DEFAULT 0,   -- minutes
+    status              ENUM('learning','completed') NOT NULL DEFAULT 'learning',
+    last_updated        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uq_user_skill (user_id, skill_id),
+    FOREIGN KEY (user_id)  REFERENCES users(id) ON DELETE CASCADE
+);
+    </code></pre>
+
+    <!-- Section 2: Backend Authentication & DB Connection -->
+    <h2>2. Backend Core (PHP)</h2>
+    <p class="desc">Database connection handler and secure Firebase UID validation middleware.</p>
+    
+    <div class="file-name">config/db.php (Excerpt)</div>
+    <pre><code class="language-php">
+&lt;?php
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'skillswap_new');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+
+function getDB(): PDO {
+    static $pdo = null;
+    if ($pdo === null) {
+        $dsn = 'mysql:host='.DB_HOST.';dbname='.DB_NAME.';charset=utf8mb4';
+        $options = [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        ];
+        $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
+    }
+    return $pdo;
+}
+
+// Security Middleware: Requires Firebase UID token from request headers
+function requireUID(): string {
+    $uid = $_SERVER['HTTP_X_FIREBASE_UID'] ?? null;
+    if (!$uid) {
+        http_response_code(401);
+        echo json_encode(['success' => false, 'error' => 'Authentication required.']);
+        exit;
+    }
+    return trim($uid);
+}
+?&gt;
+    </code></pre>
+
+    <!-- Section 3: Core Business Logic (API) -->
+    <h2>3. Business Logic API (PHP)</h2>
+    <p class="desc">API endpoint handling the completion of a video session, calculating duration, and auto-updating learning progress.</p>
+    
+    <div class="file-name">api/end_session.php (Excerpt)</div>
+    <pre><code class="language-php">
+&lt;?php
+require_once __DIR__ . '/../config/db.php';
+$learnerUID = requireUID();
+$pdo = getDB();
+
+$body = json_decode(file_get_contents('php://input'), true);
+$sessionId = (int)$body['session_id'];
+
+// Calculate Duration
+$now      = new DateTime();
+$start    = new DateTime($session['start_time']);
+$duration = (int)round(($now->getTimestamp() - $start->getTimestamp()) / 60);
+
+// Validate minimum time requirement
+$status = $duration >= 15 ? 'completed' : 'invalid';
+
+$upd = $pdo->prepare('UPDATE sessions SET end_time = ?, duration_minutes = ?, status = ? WHERE id = ?');
+$upd->execute([$now->format('Y-m-d H:i:s'), $duration, $status, $sessionId]);
+
+// Auto-update user's learning progress if valid
+if ($status === 'completed') {
+    $stmt = $pdo->prepare('
+        INSERT INTO learning_progress (user_id, skill_id, sessions_completed, total_time, status)
+        VALUES (?, ?, 1, ?, "learning")
+        ON DUPLICATE KEY UPDATE
+           sessions_completed = sessions_completed + 1,
+           total_time         = total_time + VALUES(total_time)
+    ');
+    $stmt->execute([$learnerId, $skillId, $duration]);
+}
+?&gt;
+    </code></pre>
+
+    <!-- Section 4: Frontend Logic -->
+    <h2>4. Client-Side Logic (JavaScript)</h2>
+    <p class="desc">Frontend asynchronous fetch function interacting with the backend and managing UI state for quizzes.</p>
+    
+    <div class="file-name">js/session-quiz.js (Excerpt)</div>
+    <pre><code class="language-javascript">
+// Fetch wrapper attaching secure Firebase Auth headers
+async function authFetch(url, options = {}) {
+    const uid = await getUID(); // Wait for Firebase Auth State
+    options.headers = { 
+        ...(options.headers || {}), 
+        'X-Firebase-UID': uid, 
+        'Content-Type': 'application/json' 
+    };
+    const res = await fetch(url, options);
+    return res.json();
+}
+
+// Submits the completed quiz to the backend for secure grading
+window.submitQuizAnswers = async function() {
+    const btn = document.getElementById('quiz-submit-btn');
+    btn.innerHTML = 'Grading...';
+
+    const data = await authFetch('../api/submit_quiz.php', {
+        method: 'POST',
+        body: JSON.stringify({
+            attempt_id: quizState.attemptId,
+            quiz_token: quizState.token,
+            answers: quizState.answers,
+        }),
+    });
+
+    if (data.success && data.data.passed) {
+        document.getElementById('quiz-result-title').textContent = 'Congratulations!';
+        // Reveal dynamically generated printable certificate link
+        const certLink = `../api/generate_certificate.php?token=${data.data.certificate.cert_token}`;
+        document.getElementById('quiz-cert-link').href = certLink;
+    }
+};
+    </code></pre>
+
+    <!-- Section 5: Frontend UI -->
+    <h2>5. Frontend Interface (HTML & CSS)</h2>
+    <p class="desc">Responsive card-based UI utilizing Bootstrap 5 and custom CSS variables for Dark/Light mode support.</p>
+    
+    <div class="file-name">sessions.html (Excerpt)</div>
+    <pre><code class="language-html">
+&lt;!-- Session Tracking Card --&gt;
+&lt;div class="session-card mb-4"&gt;
+    &lt;div class="d-flex justify-content-between align-items-center mb-3"&gt;
+        &lt;h5 class="fw-700 mb-0"&gt;&lt;i class="bi bi-camera-video"&gt;&lt;/i&gt; Session Controls&lt;/h5&gt;
+        &lt;span class="ss-status-dot active"&gt;🟢 Session Active&lt;/span&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Live Timer Display --&gt;
+    &lt;div id="ss-timer-box"&gt;
+        &lt;i class="bi bi-stopwatch-fill text-primary fs-5"&gt;&lt;/i&gt;
+        &lt;span id="ss-timer"&gt;00:00&lt;/span&gt;
+    &lt;/div&gt;
+
+    &lt;button id="ss-end-btn" class="btn btn-outline-danger" onclick="endLearningSession()"&gt;
+        End Session
+    &lt;/button&gt;
+&lt;/div&gt;
+    </code></pre>
+
+    <div class="file-name">css/style.css (Excerpt)</div>
+    <pre><code class="language-css">
+/* Root Variables for Theming */
+:root {
+  --primary: #6c63ff;
+  --secondary: #ff6584;
+  --bg-main: #f4f7fe;
+  --bg-card: #ffffff;
+  --text: #2b3452;
+}
+
+[data-theme="dark"] {
+  --bg-main: #0f172a;
+  --bg-card: #1e293b;
+  --text: #f8fafc;
+}
+
+.session-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 1.6rem;
+  transition: all 0.3s ease;
+}
+
+.session-card:hover {
+  box-shadow: 0 8px 28px rgba(108, 99, 255, 0.1);
+  transform: translateY(-2px);
+}
+    </code></pre>
+
+    <script>
+        // Initialize Syntax Highlighting
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        });
+    </script>
+</body>
+</html>

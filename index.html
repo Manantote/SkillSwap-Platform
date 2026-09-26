@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Skill Swap Platform — Exchange skills with people worldwide. Learn anything, teach anything — no money needed.">
+  <title>Skill Swap — Learn Anything. Teach Anything. No Money Needed.</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- ── Navbar ── -->
+  <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">
+        <i class="bi bi-arrow-left-right me-2"></i>SkillSwap
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+        <i class="bi bi-list fs-4" style="color:var(--text)"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav mx-auto gap-1">
+          <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="matches.html">Find Matches</a></li>
+          <li class="nav-item"><a class="nav-link" href="dashboard.html">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="reviews.html">Reviews</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-3">
+          <button class="dark-toggle" id="darkToggleBtn" aria-label="Toggle dark mode"></button>
+          <i id="themeIcon" class="bi bi-moon-fill" style="color:var(--text-muted);font-size:.9rem"></i>
+          <a href="login.html" class="btn-outline-custom btn">Login</a>
+          <a href="register.html" class="btn-primary-custom btn">Get Started</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── Hero Section ── -->
+  <section class="hero-section" aria-label="Hero">
+    <div class="container position-relative" style="z-index:1">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+          <div class="hero-badge">
+            <i class="bi bi-stars"></i> 50,000+ Skills Exchanged
+          </div>
+          <h1 class="hero-title">
+            Learn Anything.<br>Teach Anything.<br>
+            <span style="color:rgba(255,255,255,.8);font-style:italic">No Money Needed.</span>
+          </h1>
+          <p class="hero-subtitle mt-3">
+            Join thousands of people trading skills every day. You teach what you know, you learn what you love —
+            completely free.
+          </p>
+          <div class="d-flex flex-wrap gap-3 mt-4">
+            <a href="register.html" class="btn btn-light fw-700 px-4 py-2 rounded-pill"
+              style="font-weight:700;color:var(--primary)">
+              <i class="bi bi-rocket-takeoff-fill me-2"></i>Get Started Free
+            </a>
+            <a href="matches.html" class="btn fw-600 px-4 py-2 rounded-pill"
+              style="background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.35);backdrop-filter:blur(8px)">
+              <i class="bi bi-search me-2"></i>Browse Skills
+            </a>
+          </div>
+          <div class="hero-stats">
+            <div class="hero-stat"><span>12K+</span><small>Active Learners</small></div>
+            <div class="hero-stat"><span>800+</span><small>Skill Categories</small></div>
+            <div class="hero-stat"><span>4.9★</span><small>Avg. Rating</small></div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="hero-visual">
+            <div class="hero-card">
+              <div class="d-flex align-items-center gap-3 mb-2">
+                <div class="avatar-placeholder" style="width:42px;height:42px;font-size:1rem">A</div>
+                <div>
+                  <div style="font-weight:700;font-size:.9rem">Aisha K.</div>
+                  <div style="font-size:.75rem;opacity:.7">Teaches Python • Wants Design</div>
+                </div>
+                <span
+                  style="margin-left:auto;background:rgba(255,255,255,.2);padding:.2rem .6rem;border-radius:20px;font-size:.75rem">🔄
+                  Swapping</span>
+              </div>
+              <div class="d-flex gap-2 flex-wrap">
+                <span
+                  style="background:rgba(255,255,255,.18);color:#fff;padding:.2rem .7rem;border-radius:20px;font-size:.75rem">Python</span>
+                <span
+                  style="background:rgba(255,255,255,.18);color:#fff;padding:.2rem .7rem;border-radius:20px;font-size:.75rem">Machine
+                  Learning</span>
+              </div>
+            </div>
+            <div class="hero-card">
+              <div class="d-flex align-items-center gap-3 mb-2">
+                <div class="avatar-placeholder"
+                  style="width:42px;height:42px;font-size:1rem;background:linear-gradient(135deg,#ff6584,#ffb347)">M
+                </div>
+                <div>
+                  <div style="font-weight:700;font-size:.9rem">Marco T.</div>
+                  <div style="font-size:.75rem;opacity:.7">Teaches Design • Wants Python</div>
+                </div>
+                <span
+                  style="margin-left:auto;background:rgba(255,255,255,.2);padding:.2rem .6rem;border-radius:20px;font-size:.75rem">✅
+                  Matched!</span>
+              </div>
+              <div class="d-flex gap-2 flex-wrap">
+                <span
+                  style="background:rgba(255,255,255,.18);color:#fff;padding:.2rem .7rem;border-radius:20px;font-size:.75rem">Figma</span>
+                <span
+                  style="background:rgba(255,255,255,.18);color:#fff;padding:.2rem .7rem;border-radius:20px;font-size:.75rem">Adobe
+                  XD</span>
+              </div>
+            </div>
+            <div class="hero-card">
+              <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-chat-dots-fill" style="font-size:1.5rem"></i>
+                <div>
+                  <div style="font-weight:700;font-size:.85rem">Swap Request Accepted!</div>
+                  <div style="font-size:.75rem;opacity:.7">Start your first lesson today 🎉</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── How It Works ── -->
+  <section class="py-6" style="padding:5rem 0" id="how-it-works">
+    <div class="container">
+      <div class="text-center mb-5">
+        <p class="text-uppercase fw-600 mb-2" style="color:var(--primary);letter-spacing:2px;font-size:.85rem">How It
+          Works</p>
+        <h2 class="section-title">Three Simple Steps</h2>
+        <p class="section-subtitle">Get started exchanging skills in minutes</p>
+      </div>
+      <div class="row g-4 justify-content-center">
+        <div class="col-md-4 text-center animate-on-scroll">
+          <div class="card-custom p-4 h-100">
+            <div class="feature-icon mx-auto mb-3"
+              style="background:linear-gradient(135deg,rgba(108,99,255,.15),rgba(108,99,255,.05))">
+              <span style="font-size:2rem">📝</span>
+            </div>
+            <div class="step-number"
+              style="font-size:.75rem;font-weight:700;color:var(--primary);letter-spacing:2px;text-transform:uppercase;margin-bottom:.5rem">
+              Step 01</div>
+            <h4 class="fw-700 mb-2">Create Your Profile</h4>
+            <p class="text-muted mb-0">Register and list the skills you can teach and the skills you want to learn.</p>
+          </div>
+        </div>
+        <div class="col-md-4 text-center animate-on-scroll">
+          <div class="card-custom p-4 h-100"
+            style="border-color:var(--primary);box-shadow:0 4px 24px rgba(108,99,255,.15)">
+            <div class="feature-icon mx-auto mb-3"
+              style="background:linear-gradient(135deg,rgba(255,101,132,.15),rgba(255,101,132,.05))">
+              <span style="font-size:2rem">🔍</span>
+            </div>
+            <div class="step-number"
+              style="font-size:.75rem;font-weight:700;color:var(--secondary);letter-spacing:2px;text-transform:uppercase;margin-bottom:.5rem">
+              Step 02</div>
+            <h4 class="fw-700 mb-2">Find Your Match</h4>
+            <p class="text-muted mb-0">Our smart matching system pairs you with users who have exactly what you need.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4 text-center animate-on-scroll">
+          <div class="card-custom p-4 h-100">
+            <div class="feature-icon mx-auto mb-3"
+              style="background:linear-gradient(135deg,rgba(67,210,198,.15),rgba(67,210,198,.05))">
+              <span style="font-size:2rem">🤝</span>
+            </div>
+            <div class="step-number"
+              style="font-size:.75rem;font-weight:700;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:.5rem">
+              Step 03</div>
+            <h4 class="fw-700 mb-2">Start Swapping</h4>
+            <p class="text-muted mb-0">Connect, chat, schedule sessions, and exchange skills. Then leave a review!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Popular Skills ── -->
+  <section style="padding:5rem 0;background:var(--bg-secondary)" id="skills">
+    <div class="container">
+      <div class="text-center mb-5">
+        <p class="text-uppercase fw-600 mb-2" style="color:var(--primary);letter-spacing:2px;font-size:.85rem">On The
+          Platform</p>
+        <h2 class="section-title">Popular Skills</h2>
+        <p class="section-subtitle">Explore the most swapped skills across our community</p>
+      </div>
+
+      <!-- Search bar -->
+      <div class="row justify-content-center mb-4">
+        <div class="col-md-6">
+          <div class="search-wrap">
+            <i class="bi bi-search"></i>
+            <input type="text" class="form-control form-control-custom" id="skillSearch"
+              placeholder="Search for a skill…" oninput="filterSkillTags(this.value)">
+          </div>
+        </div>
+      </div>
+
+      <div class="skill-cloud justify-content-center" id="skillCloud">
+        <span class="skill-tag skill-tag-purple"><i class="bi bi-code-slash"></i> Python</span>
+        <span class="skill-tag skill-tag-pink"><i class="bi bi-palette"></i> Graphic Design</span>
+        <span class="skill-tag skill-tag-teal"><i class="bi bi-camera"></i> Photography</span>
+        <span class="skill-tag skill-tag-orange"><i class="bi bi-music-note"></i> Guitar</span>
+        <span class="skill-tag skill-tag-purple"><i class="bi bi-globe"></i> Web Development</span>
+        <span class="skill-tag skill-tag-pink"><i class="bi bi-translate"></i> Spanish</span>
+        <span class="skill-tag skill-tag-teal"><i class="bi bi-graph-up"></i> Data Science</span>
+        <span class="skill-tag skill-tag-orange"><i class="bi bi-book"></i> Copywriting</span>
+        <span class="skill-tag skill-tag-purple"><i class="bi bi-phone"></i> React Native</span>
+        <span class="skill-tag skill-tag-pink"><i class="bi bi-youtube"></i> Video Editing</span>
+        <span class="skill-tag skill-tag-teal"><i class="bi bi-bar-chart"></i> Excel & Power BI</span>
+        <span class="skill-tag skill-tag-orange"><i class="bi bi-pencil"></i> Illustration</span>
+        <span class="skill-tag skill-tag-purple"><i class="bi bi-robot"></i> Machine Learning</span>
+        <span class="skill-tag skill-tag-pink"><i class="bi bi-headphones"></i> Music Production</span>
+        <span class="skill-tag skill-tag-teal"><i class="bi bi-cpu"></i> Docker & DevOps</span>
+        <span class="skill-tag skill-tag-orange"><i class="bi bi-megaphone"></i> Digital Marketing</span>
+        <span class="skill-tag skill-tag-purple"><i class="bi bi-person-arms-up"></i> Yoga & Fitness</span>
+        <span class="skill-tag skill-tag-pink"><i class="bi bi-egg-fried"></i> Cooking</span>
+        <span class="skill-tag skill-tag-teal"><i class="bi bi-currency-bitcoin"></i> Blockchain</span>
+        <span class="skill-tag skill-tag-orange"><i class="bi bi-mic"></i> Public Speaking</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Featured Matches Preview ── -->
+  <section style="padding:5rem 0">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-end mb-5 flex-wrap gap-3">
+        <div>
+          <p class="text-uppercase fw-600 mb-2" style="color:var(--primary);letter-spacing:2px;font-size:.85rem">
+            Community</p>
+          <h2 class="section-title mb-0">Featured Skill Swappers</h2>
+        </div>
+        <a href="matches.html" class="btn-outline-custom btn">See All Matches</a>
+      </div>
+      <div class="row g-4">
+        <!-- Card 1 -->
+        <div class="col-md-6 col-xl-3">
+          <div class="match-card">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="avatar-placeholder" style="background:linear-gradient(135deg,#6c63ff,#a78bfa)">R</div>
+              <div>
+                <div class="fw-700">Riya Sharma</div>
+                <div class="stars" style="font-size:.8rem">★★★★★</div>
+              </div>
+            </div>
+            <div class="mb-2">
+              <small class="text-muted fw-600">TEACHES</small>
+              <div class="mt-1"><span class="badge-skill"><i class="bi bi-code-slash"></i>Python</span></div>
+            </div>
+            <div class="mb-3">
+              <small class="text-muted fw-600">WANTS TO LEARN</small>
+              <div class="mt-1"><span class="badge-skill"
+                  style="background:rgba(255,101,132,.1);color:var(--secondary);border-color:rgba(255,101,132,.2)"><i
+                    class="bi bi-palette"></i>Figma</span></div>
+            </div>
+            <a href="register.html" class="btn btn-primary-custom w-100 btn-sm"><i class="bi bi-send me-2"></i>Send Swap
+              Request</a>
+          </div>
+        </div>
+        <!-- Card 2 -->
+        <div class="col-md-6 col-xl-3">
+          <div class="match-card">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="avatar-placeholder" style="background:linear-gradient(135deg,#ff6584,#ffb347)">J</div>
+              <div>
+                <div class="fw-700">James Okafor</div>
+                <div class="stars" style="font-size:.8rem">★★★★☆</div>
+              </div>
+            </div>
+            <div class="mb-2">
+              <small class="text-muted fw-600">TEACHES</small>
+              <div class="mt-1"><span class="badge-skill"><i class="bi bi-camera"></i>Photography</span></div>
+            </div>
+            <div class="mb-3">
+              <small class="text-muted fw-600">WANTS TO LEARN</small>
+              <div class="mt-1"><span class="badge-skill"
+                  style="background:rgba(255,101,132,.1);color:var(--secondary);border-color:rgba(255,101,132,.2)"><i
+                    class="bi bi-graph-up"></i>Data Science</span></div>
+            </div>
+            <a href="register.html" class="btn btn-primary-custom w-100 btn-sm"><i class="bi bi-send me-2"></i>Send Swap
+              Request</a>
+          </div>
+        </div>
+        <!-- Card 3 -->
+        <div class="col-md-6 col-xl-3">
+          <div class="match-card">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="avatar-placeholder" style="background:linear-gradient(135deg,#43d2c6,#1a9487)">S</div>
+              <div>
+                <div class="fw-700">Sofia Matos</div>
+                <div class="stars" style="font-size:.8rem">★★★★★</div>
+              </div>
+            </div>
+            <div class="mb-2">
+              <small class="text-muted fw-600">TEACHES</small>
+              <div class="mt-1"><span class="badge-skill"><i class="bi bi-translate"></i>Spanish</span></div>
+            </div>
+            <div class="mb-3">
+              <small class="text-muted fw-600">WANTS TO LEARN</small>
+              <div class="mt-1"><span class="badge-skill"
+                  style="background:rgba(255,101,132,.1);color:var(--secondary);border-color:rgba(255,101,132,.2)"><i
+                    class="bi bi-music-note"></i>Guitar</span></div>
+            </div>
+            <a href="register.html" class="btn btn-primary-custom w-100 btn-sm"><i class="bi bi-send me-2"></i>Send Swap
+              Request</a>
+          </div>
+        </div>
+        <!-- Card 4 -->
+        <div class="col-md-6 col-xl-3">
+          <div class="match-card">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="avatar-placeholder" style="background:linear-gradient(135deg,#ff8b32,#ffcf54)">L</div>
+              <div>
+                <div class="fw-700">Liam Chen</div>
+                <div class="stars" style="font-size:.8rem">★★★★☆</div>
+              </div>
+            </div>
+            <div class="mb-2">
+              <small class="text-muted fw-600">TEACHES</small>
+              <div class="mt-1"><span class="badge-skill"><i class="bi bi-youtube"></i>Video Editing</span></div>
+            </div>
+            <div class="mb-3">
+              <small class="text-muted fw-600">WANTS TO LEARN</small>
+              <div class="mt-1"><span class="badge-skill"
+                  style="background:rgba(255,101,132,.1);color:var(--secondary);border-color:rgba(255,101,132,.2)"><i
+                    class="bi bi-globe"></i>React</span></div>
+            </div>
+            <a href="register.html" class="btn btn-primary-custom w-100 btn-sm"><i class="bi bi-send me-2"></i>Send Swap
+              Request</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Testimonials ── -->
+  <section style="padding:5rem 0;background:var(--bg-secondary)">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="section-title">What Our Users Say</h2>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="review-card">
+            <div class="stars mb-2">★★★★★</div>
+            <p class="mb-3" style="color:var(--text-muted)">"I taught Python and learned Graphic Design. Best platform
+              I've ever used. Zero dollars spent!"</p>
+            <div class="d-flex align-items-center gap-2">
+              <div class="avatar-placeholder" style="width:36px;height:36px;font-size:.9rem">A</div>
+              <div>
+                <div class="fw-600" style="font-size:.88rem">Arjun Patel</div>
+                <div style="font-size:.75rem;color:var(--text-muted)">Software Engineer</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="review-card">
+            <div class="stars mb-2">★★★★★</div>
+            <p class="mb-3" style="color:var(--text-muted)">"Found a Spanish tutor who wanted to learn Photography from
+              me. We're both improving so fast!"</p>
+            <div class="d-flex align-items-center gap-2">
+              <div class="avatar-placeholder"
+                style="width:36px;height:36px;font-size:.9rem;background:linear-gradient(135deg,#ff6584,#ff9f43)">E
+              </div>
+              <div>
+                <div class="fw-600" style="font-size:.88rem">Emma Davis</div>
+                <div style="font-size:.75rem;color:var(--text-muted)">Photographer</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="review-card">
+            <div class="stars mb-2">★★★★★</div>
+            <p class="mb-3" style="color:var(--text-muted)">"The matching algorithm is incredible. Connected me with
+              exactly the right person — it feels like magic."</p>
+            <div class="d-flex align-items-center gap-2">
+              <div class="avatar-placeholder"
+                style="width:36px;height:36px;font-size:.9rem;background:linear-gradient(135deg,#43d2c6,#1a9487)">K
+              </div>
+              <div>
+                <div class="fw-600" style="font-size:.88rem">Kenji Tanaka</div>
+                <div style="font-size:.75rem;color:var(--text-muted)">UI Designer</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA Section ── -->
+  <section style="padding:5rem 0">
+    <div class="container">
+      <div class="text-center p-5 rounded-4" style="background:var(--gradient-hero)">
+        <h2 style="color:#fff;font-size:2.2rem;font-weight:800" class="mb-3">Ready to Start Swapping?</h2>
+        <p style="color:rgba(255,255,255,.85);font-size:1.1rem" class="mb-4">Join 12,000+ learners and teachers today.
+          It costs nothing.</p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+          <a href="register.html" class="btn btn-light fw-700 px-4 py-2 rounded-pill" style="color:var(--primary)">
+            <i class="bi bi-rocket-takeoff-fill me-2"></i>Create Free Account
+          </a>
+          <a href="login.html" class="btn rounded-pill px-4 py-2 fw-600"
+            style="border:1.5px solid rgba(255,255,255,.4);color:#fff;background:rgba(255,255,255,.1)">
+            Already a member? Login
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ── -->
+  <footer class="footer">
+    <div class="container">
+      <div class="row g-4 mb-4">
+        <div class="col-lg-4">
+          <div class="footer-brand mb-2"><i class="bi bi-arrow-left-right me-2"></i>SkillSwap</div>
+          <p style="color:var(--text-muted);font-size:.9rem;max-width:280px">Connecting learners and teachers worldwide.
+            Exchange skills, grow together — completely free.</p>
+          <div class="d-flex gap-2 mt-3">
+            <a href="#" class="social-icon"><i class="bi bi-twitter-x"></i></a>
+            <a href="#" class="social-icon"><i class="bi bi-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="bi bi-linkedin"></i></a>
+            <a href="#" class="social-icon"><i class="bi bi-youtube"></i></a>
+            <a href="#" class="social-icon"><i class="bi bi-github"></i></a>
+          </div>
+        </div>
+        <div class="col-6 col-lg-2">
+          <div class="fw-700 mb-3" style="font-size:.9rem">Platform</div>
+          <ul class="list-unstyled" style="color:var(--text-muted);font-size:.88rem">
+            <li class="mb-2"><a href="matches.html" style="color:inherit">Find Matches</a></li>
+            <li class="mb-2"><a href="dashboard.html" style="color:inherit">Dashboard</a></li>
+            <li class="mb-2"><a href="reviews.html" style="color:inherit">Reviews</a></li>
+            <li class="mb-2"><a href="chat.html" style="color:inherit">Chat</a></li>
+          </ul>
+        </div>
+        <div class="col-6 col-lg-2">
+          <div class="fw-700 mb-3" style="font-size:.9rem">Account</div>
+          <ul class="list-unstyled" style="color:var(--text-muted);font-size:.88rem">
+            <li class="mb-2"><a href="register.html" style="color:inherit">Register</a></li>
+            <li class="mb-2"><a href="login.html" style="color:inherit">Login</a></li>
+            <li class="mb-2"><a href="add-skills.html" style="color:inherit">Add Skills</a></li>
+            <li class="mb-2"><a href="requests.html" style="color:inherit">Requests</a></li>
+          </ul>
+        </div>
+        <div class="col-6 col-lg-2">
+          <div class="fw-700 mb-3" style="font-size:.9rem">Company</div>
+          <ul class="list-unstyled" style="color:var(--text-muted);font-size:.88rem">
+            <li class="mb-2"><a href="#" style="color:inherit">About</a></li>
+            <li class="mb-2"><a href="#" style="color:inherit">Blog</a></li>
+            <li class="mb-2"><a href="#" style="color:inherit">Careers</a></li>
+            <li class="mb-2"><a href="#" style="color:inherit">Contact</a></li>
+          </ul>
+        </div>
+        <div class="col-6 col-lg-2">
+          <div class="fw-700 mb-3" style="font-size:.9rem">Legal</div>
+          <ul class="list-unstyled" style="color:var(--text-muted);font-size:.88rem">
+            <li class="mb-2"><a href="#" style="color:inherit">Privacy Policy</a></li>
+            <li class="mb-2"><a href="#" style="color:inherit">Terms of Use</a></li>
+            <li class="mb-2"><a href="#" style="color:inherit">Cookie Policy</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-top pt-3" style="border-color:var(--border)!important">
+        <div class="d-flex justify-content-between flex-wrap gap-2" style="color:var(--text-muted);font-size:.82rem">
+          <span>© 2026 SkillSwap. All rights reserved.</span>
+          <span>Made with ❤️ from Manan, Sumit, Rutvik</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/script.js"></script>
+  <script src="components/chatbot.js"></script>
+  <script>
+    // Skill tag search filter
+    function filterSkillTags(q) {
+      q = q.toLowerCase();
+      document.querySelectorAll('#skillCloud .skill-tag').forEach(tag => {
+        tag.style.display = tag.textContent.toLowerCase().includes(q) ? '' : 'none';
+      });
+    }
+    // Re-init dark toggle after DOM
+    document.querySelectorAll('.dark-toggle').forEach(btn => btn.id = 'darkToggleBtn');
+  </script>
+</body>
+
+</html>

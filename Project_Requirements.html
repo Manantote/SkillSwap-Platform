@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSwap - Software & Hardware Requirements</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            background: #fff;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        h1 {
+            color: #1a1a2e;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #6c63ff;
+            font-size: 20px;
+            margin-top: 35px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+
+        h3 {
+            color: #444;
+            font-size: 16px;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            margin-top: 0;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        /* Print Specific Styles */
+        @media print {
+            body {
+                padding: 0;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+
+        .print-btn {
+            display: block;
+            width: 200px;
+            margin: 0 auto 30px;
+            padding: 12px 24px;
+            background: #6c63ff;
+            color: white;
+            text-align: center;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .print-btn:hover {
+            background: #5a52d5;
+        }
+    </style>
+</head>
+<body>
+
+    <button class="print-btn no-print" onclick="window.print()">📥 Save as PDF</button>
+
+    <div class="header">
+        <h1>SkillSwap Platform</h1>
+        <p>Project Requirements Specification</p>
+    </div>
+
+    <h2>3.1 Software Requirements</h2>
+
+    <h3>Frontend Technologies:</h3>
+    <ul>
+        <li><strong>Markup & Styling:</strong> HTML5, CSS3, JavaScript (Vanilla)</li>
+        <li><strong>UI Framework:</strong> Bootstrap 5 (Responsive Layouts, Grid, Components)</li>
+        <li><strong>Iconography:</strong> Bootstrap Icons</li>
+        <li><strong>Typography:</strong> Google Fonts (Inter, Playfair Display)</li>
+    </ul>
+
+    <h3>Backend & Database:</h3>
+    <ul>
+        <li><strong>Server-Side Scripting:</strong> PHP 8.x</li>
+        <li><strong>Database Management System:</strong> MySQL / MariaDB</li>
+        <li><strong>Local Development Environment:</strong> XAMPP Server (Apache & MySQL hosting)</li>
+    </ul>
+
+    <h3>Authentication & Integrations:</h3>
+    <ul>
+        <li><strong>User Authentication:</strong> Firebase Authentication (Email/Password, Google OAuth)</li>
+        <li><strong>Video Conferencing:</strong> Google Meet API (Persistent session links)</li>
+    </ul>
+
+    <h3>Development Tools:</h3>
+    <ul>
+        <li><strong>IDE/Code Editor:</strong> Visual Studio Code</li>
+        <li><strong>Testing Environments:</strong> Google Chrome, Safari, Mozilla Firefox</li>
+        <li><strong>Version Control:</strong> Git</li>
+    </ul>
+
+
+    <h2>3.2 Hardware Requirements</h2>
+
+    <h3>Server-Side (Development Environment):</h3>
+    <ul>
+        <li><strong>Processor:</strong> Intel Core i3 / AMD Ryzen 3 or higher (Apple Silicon M1/M2 supported)</li>
+        <li><strong>RAM:</strong> Minimum 4 GB (8 GB recommended for optimal IDE and XAMPP performance)</li>
+        <li><strong>Storage:</strong> Minimum 500 MB of free disk space for project files and database instances</li>
+        <li><strong>Operating System:</strong> macOS (Current), Windows 10/11, or Linux</li>
+    </ul>
+
+    <h3>Client-Side (End-User Environment):</h3>
+    <ul>
+        <li><strong>Device:</strong> PC, Laptop, Tablet, or Smartphone</li>
+        <li><strong>Processor:</strong> Standard minimum requirements to run a modern web browser</li>
+        <li><strong>RAM:</strong> Minimum 2 GB (4 GB recommended for smooth experience)</li>
+        <li><strong>Display:</strong> Minimum resolution of 320px width (Mobile-responsive UI supported)</li>
+        <li><strong>Network:</strong> Active broadband/4G/5G internet connection required for real-time chat, API requests, and Google Meet video sessions.</li>
+    </ul>
+
+</body>
+</html>

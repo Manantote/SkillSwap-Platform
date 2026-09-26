@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Add and manage your skills on Skill Swap.">
+  <title>Add Skills — Skill Swap</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+  <div class="container">
+    <a class="navbar-brand" href="index.html"><i class="bi bi-arrow-left-right me-2"></i>SkillSwap</a>
+    <div class="d-flex align-items-center gap-3 ms-auto">
+      <a href="dashboard.html" class="btn-outline-custom btn btn-sm"><i class="bi bi-arrow-left me-1"></i>Dashboard</a>
+      <button class="dark-toggle" aria-label="Toggle theme"></button>
+      <i id="themeIcon" class="bi bi-moon-fill" style="color:var(--text-muted);font-size:.9rem"></i>
+    </div>
+  </div>
+</nav>
+
+<!-- Page Header -->
+<div class="page-header text-center text-white">
+  <div class="container">
+    <h1 class="fw-800 mb-2"><i class="bi bi-plus-circle me-2"></i>Manage Your Skills</h1>
+    <p style="opacity:.85;font-size:1.05rem">Tell the community what you know and what you want to learn</p>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-4 justify-content-center">
+
+    <!-- Left: Skills I Teach -->
+    <div class="col-lg-6">
+      <div class="card-custom p-4">
+        <div class="d-flex align-items-center gap-3 mb-4">
+          <div class="stat-icon purple"><i class="bi bi-mortarboard-fill"></i></div>
+          <div>
+            <h5 class="fw-700 mb-0">Skills I Can Teach</h5>
+            <small style="color:var(--text-muted)">Add up to 10 skills you can teach</small>
+          </div>
+        </div>
+
+        <!-- Dropdown category -->
+        <div class="mb-3">
+          <label class="form-label-custom">Browse by Category</label>
+          <select class="form-select form-control-custom" id="teachCategory" onchange="loadCategorySkills(this.value,'teach')">
+            <option value="">— Select a category —</option>
+            <option value="tech">💻 Technology & Programming</option>
+            <option value="design">🎨 Design & Creativity</option>
+            <option value="language">🌍 Languages</option>
+            <option value="music">🎵 Music & Arts</option>
+            <option value="business">📊 Business & Marketing</option>
+            <option value="fitness">🏋️ Health & Fitness</option>
+            <option value="cooking">🍳 Cooking & Lifestyle</option>
+          </select>
+        </div>
+
+        <!-- Pre-filled pills from category -->
+        <div id="teachCategorySkills" class="skill-cloud mb-3" style="min-height:40px"></div>
+
+        <!-- Search & type tag -->
+        <div class="mb-3">
+          <label class="form-label-custom">Search or Type a Skill</label>
+          <div class="position-relative">
+            <div class="search-wrap">
+              <i class="bi bi-search"></i>
+              <input type="text" class="form-control form-control-custom" id="teachInput" placeholder="Type skill and press Enter…" autocomplete="off">
+              <div id="teachDropdown" class="dropdown-menu" style="display:none;position:absolute;width:100%;z-index:100;top:46px"></div>
+            </div>
+          </div>
+          <small style="color:var(--text-muted);font-size:.78rem">Press <kbd>Enter</kbd> or <kbd>,</kbd> to add</small>
+        </div>
+
+        <!-- Added tags -->
+        <div>
+          <label class="form-label-custom">Added Skills</label>
+          <div id="teachTagsContainer" class="skill-cloud p-3 rounded-3" style="min-height:60px;background:var(--bg-secondary);border:1.5px dashed var(--border)">
+            <span class="badge-skill"><i class="bi bi-code-slash"></i>Python<button type="button" onclick="removeTagFromContainer('teachTagsContainer','Python')" style="background:none;border:none;padding:0;margin-left:.3rem;cursor:pointer;color:inherit">×</button></span>
+          </div>
+        </div>
+        <div class="mt-3">
+          <button onclick="saveSkills('teach')" class="btn btn-primary-custom w-100"><i class="bi bi-save me-2"></i>Save Teaching Skills</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Skills to Learn -->
+    <div class="col-lg-6">
+      <div class="card-custom p-4">
+        <div class="d-flex align-items-center gap-3 mb-4">
+          <div class="stat-icon pink"><i class="bi bi-lightbulb-fill"></i></div>
+          <div>
+            <h5 class="fw-700 mb-0">Skills I Want to Learn</h5>
+            <small style="color:var(--text-muted)">Add up to 10 skills you want to learn</small>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label-custom">Browse by Category</label>
+          <select class="form-select form-control-custom" id="learnCategory" onchange="loadCategorySkills(this.value,'learn')">
+            <option value="">— Select a category —</option>
+            <option value="tech">💻 Technology & Programming</option>
+            <option value="design">🎨 Design & Creativity</option>
+            <option value="language">🌍 Languages</option>
+            <option value="music">🎵 Music & Arts</option>
+            <option value="business">📊 Business & Marketing</option>
+            <option value="fitness">🏋️ Health & Fitness</option>
+            <option value="cooking">🍳 Cooking & Lifestyle</option>
+          </select>
+        </div>
+
+        <div id="learnCategorySkills" class="skill-cloud mb-3" style="min-height:40px"></div>
+
+        <div class="mb-3">
+          <label class="form-label-custom">Search or Type a Skill</label>
+          <div class="position-relative">
+            <div class="search-wrap">
+              <i class="bi bi-search"></i>
+              <input type="text" class="form-control form-control-custom" id="learnInput" placeholder="Type skill and press Enter…" autocomplete="off">
+              <div id="learnDropdown" class="dropdown-menu" style="display:none;position:absolute;width:100%;z-index:100;top:46px"></div>
+            </div>
+          </div>
+          <small style="color:var(--text-muted);font-size:.78rem">Press <kbd>Enter</kbd> or <kbd>,</kbd> to add</small>
+        </div>
+
+        <div>
+          <label class="form-label-custom">Added Skills</label>
+          <div id="learnTagsContainer" class="skill-cloud p-3 rounded-3" style="min-height:60px;background:var(--bg-secondary);border:1.5px dashed var(--border)">
+            <span class="badge-skill" style="background:rgba(255,101,132,.1);color:var(--secondary);border-color:rgba(255,101,132,.2)"><i class="bi bi-palette"></i>Figma<button type="button" onclick="removeTagFromContainer('learnTagsContainer','Figma')" style="background:none;border:none;padding:0;margin-left:.3rem;cursor:pointer;color:inherit">×</button></span>
+          </div>
+        </div>
+        <div class="mt-3">
+          <button onclick="saveSkills('learn')" class="btn w-100" style="background:var(--gradient-primary);color:#fff;border:none;padding:.65rem;border-radius:50px;font-weight:600;box-shadow:0 4px 16px rgba(108,99,255,.35)"><i class="bi bi-save me-2"></i>Save Learning Goals</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skill tips -->
+    <div class="col-12">
+      <div class="card-custom p-4" style="background:rgba(108,99,255,.04)">
+        <h6 class="fw-700 mb-3"><i class="bi bi-lightbulb-fill me-2" style="color:var(--warning)"></i>Tips for Better Matches</h6>
+        <div class="row g-3">
+          <div class="col-md-3 text-center">
+            <div style="font-size:2rem">🎯</div>
+            <div class="fw-600" style="font-size:.85rem">Be Specific</div>
+            <div style="color:var(--text-muted);font-size:.78rem">Instead of "Programming", say "Python for Data Science"</div>
+          </div>
+          <div class="col-md-3 text-center">
+            <div style="font-size:2rem">📚</div>
+            <div class="fw-600" style="font-size:.85rem">Add Multiple Skills</div>
+            <div style="color:var(--text-muted);font-size:.78rem">More skills = more potential matches</div>
+          </div>
+          <div class="col-md-3 text-center">
+            <div style="font-size:2rem">🔄</div>
+            <div class="fw-600" style="font-size:.85rem">Keep It Updated</div>
+            <div style="color:var(--text-muted);font-size:.78rem">Update your skills as you grow and learn</div>
+          </div>
+          <div class="col-md-3 text-center">
+            <div style="font-size:2rem">⭐</div>
+            <div class="fw-600" style="font-size:.85rem">Build Your Reputation</div>
+            <div style="color:var(--text-muted);font-size:.78rem">Great reviews attract better match quality</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDK (compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+<script src="firebase/firebase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/script.js"></script>
+<script src="js/api.js"></script>
+<script src="components/chatbot.js"></script>
+<script>
+  const categorySkills = {
+    tech: ['Python','JavaScript','React','Vue','Angular','Node.js','TypeScript','Docker','Kubernetes','AWS','Machine Learning','Data Science','SQL','MongoDB','GraphQL','C++','Java','Kotlin','Swift','Flutter'],
+    design: ['Figma','Adobe XD','Photoshop','Illustrator','InDesign','UI/UX Design','Graphic Design','Motion Design','3D Modeling','Blender'],
+    language: ['Spanish','French','Japanese','Mandarin','Arabic','German','Italian','Portuguese','Hindi','Korean'],
+    music: ['Guitar','Piano','Singing','Music Production','Violin','Drums','Music Theory','DJing','Songwriting','Mixing & Mastering'],
+    business: ['Digital Marketing','SEO','Content Creation','Copywriting','Excel','Power BI','Tableau','Project Management','Agile','Public Speaking','Sales','Accounting','Financial Modelling'],
+    fitness: ['Yoga','Personal Training','Meditation','Pilates','CrossFit','Martial Arts','Nutrition','Running','Swimming','Dance'],
+    cooking: ['Baking','Vegan Cooking','Italian Cuisine','Sushi Making','Cake Decorating','Meal Prep','Wine Pairing','Coffee Brewing','Knife Skills','Food Photography']
+  };
+
+  function loadCategorySkills(cat, type) {
+    const container = document.getElementById(`${type}CategorySkills`);
+    if (!cat) { container.innerHTML = ''; return; }
+    const skills = categorySkills[cat] || [];
+    container.innerHTML = skills.map(s =>
+      `<span class="skill-tag ${type === 'teach' ? 'skill-tag-purple' : 'skill-tag-pink'}" onclick="addTagToContainer('${type}TagsContainer','${s}','${type}')" style="cursor:pointer">${s}</span>`
+    ).join('');
+  }
+
+  function addTagToContainer(containerId, skill, type) {
+    const container = document.getElementById(containerId);
+    const existing = Array.from(container.querySelectorAll('.badge-skill')).map(el => el.textContent.replace('×','').trim());
+    if (existing.includes(skill)) { showToast('Skill already added!', 'warning'); return; }
+    if (existing.length >= 10) { showToast('Maximum 10 skills allowed', 'danger'); return; }
+
+    const span = document.createElement('span');
+    span.className = 'badge-skill';
+    if (type === 'learn') span.style = 'background:rgba(255,101,132,.1);color:var(--secondary);border-color:rgba(255,101,132,.2)';
+    span.innerHTML = `${skill}<button type="button" onclick="removeTagFromContainer('${containerId}','${skill}')" style="background:none;border:none;padding:0;margin-left:.3rem;cursor:pointer;color:inherit">×</button>`;
+    container.appendChild(span);
+  }
+
+  function removeTagFromContainer(containerId, skill) {
+    const container = document.getElementById(containerId);
+    container.querySelectorAll('.badge-skill').forEach(el => {
+      if (el.textContent.replace('×','').trim() === skill) el.remove();
+    });
+  }
+
+  // ── Save skills via API ──────────────────────────────────────────────────────
+  async function saveSkills(type) {
+    const container = document.getElementById(`${type}TagsContainer`);
+    const skills = Array.from(container.querySelectorAll('.badge-skill'))
+      .map(el => el.textContent.replace('×','').trim())
+      .filter(Boolean);
+
+    if (!skills.length) {
+      showToast('No skills to save.', 'warning');
+      return;
+    }
+
+    try {
+      // Add each skill individually via API
+      await Promise.all(skills.map(name => API.addSkill(name, type)));
+      showToast(`${type === 'teach' ? 'Teaching' : 'Learning'} skills saved!`, 'success');
+    } catch (e) {
+      showToast(e.message || 'Failed to save skills.', 'danger');
+    }
+  }
+
+  // Tag input setup (unchanged UI)
+  initTagInput('teachInput', 'teachTagsContainer', null);
+  initTagInput('learnInput', 'learnTagsContainer', null);
+  initSkillAutocomplete('teachInput', 'teachDropdown');
+  initSkillAutocomplete('learnInput', 'learnDropdown');
+
+  ['teachInput','learnInput'].forEach(id => {
+    const type = id.replace('Input','');
+    document.getElementById(id).addEventListener('keydown', function(e) {
+      if ((e.key === 'Enter' || e.key === ',') && this.value.trim()) {
+        e.preventDefault();
+        addTagToContainer(`${type}TagsContainer`, this.value.trim(), id.includes('teach') ? 'teach' : 'learn');
+        this.value = '';
+      }
+    });
+  });
+
+  // ── Pre-load existing skills from API on page load ──────────────────────────
+  (async () => {
+    const firebaseUser = await requireAuth();
+    try {
+      const skills = await API.getUserSkills(firebaseUser.uid);
+
+      // Clear demo defaults and pre-fill
+      if (skills.teach.length) {
+        document.getElementById('teachTagsContainer').innerHTML = '';
+        skills.teach.forEach(s => addTagToContainer('teachTagsContainer', s.name, 'teach'));
+      }
+      if (skills.learn.length) {
+        document.getElementById('learnTagsContainer').innerHTML = '';
+        skills.learn.forEach(s => addTagToContainer('learnTagsContainer', s.name, 'learn'));
+      }
+    } catch (e) {
+      console.warn('Could not load existing skills', e);
+    }
+  })();
+</script>
+</body>
+</html>

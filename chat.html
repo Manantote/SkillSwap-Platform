@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Chat with your skill swap partners on Skill Swap.">
+  <title>Chat — Skill Swap</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { overflow: hidden; }
+    .emoji-bar button {
+      background: none; border: none; font-size: 1.2rem; cursor: pointer;
+      padding: .1rem .2rem; transition: transform .15s; line-height: 1;
+    }
+    .emoji-bar button:hover { transform: scale(1.3); }
+    .online-dot {
+      width: 10px; height: 10px; background: #4ade80;
+      border-radius: 50%; border: 2px solid var(--bg-card);
+      position: absolute; bottom: 2px; right: 2px;
+    }
+  </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand" href="index.html"><i class="bi bi-arrow-left-right me-2"></i>SkillSwap</a>
+    <div class="d-flex align-items-center gap-3 ms-auto">
+      <a href="dashboard.html" class="nav-link" style="color:var(--text-muted)"><i class="bi bi-grid me-1"></i>Dashboard</a>
+      <button class="dark-toggle" aria-label="Toggle theme"></button>
+      <i id="themeIcon" class="bi bi-moon-fill" style="color:var(--text-muted);font-size:.9rem"></i>
+    </div>
+  </div>
+</nav>
+
+<div class="chat-container">
+
+  <!-- Sidebar with conversations -->
+  <div class="chat-sidebar">
+    <div class="p-3 border-bottom" style="border-color:var(--border)!important">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h6 class="fw-700 mb-0">Messages</h6>
+        <button class="btn btn-sm" style="background:rgba(108,99,255,.1);color:var(--primary);border-radius:8px;padding:.25rem .6rem"><i class="bi bi-pencil-square"></i></button>
+      </div>
+      <div class="search-wrap">
+        <i class="bi bi-search"></i>
+        <input type="text" class="form-control form-control-custom" style="font-size:.82rem" placeholder="Search conversations…">
+      </div>
+    </div>
+
+    <div class="chat-list" id="chatList">
+      <div style="color:var(--text-muted);font-size:.82rem;padding:1rem;text-align:center">
+        <i class="bi bi-hourglass-split me-1"></i>Loading conversations…
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Main chat window -->
+  <div class="chat-main">
+    <!-- Chat header -->
+    <div class="chat-header justify-content-between">
+      <div class="d-flex align-items-center gap-3">
+        <div class="position-relative">
+          <div class="avatar-placeholder" style="width:44px;height:44px;background:linear-gradient(135deg,#6c63ff,#a78bfa)" id="chatPartnerAvatar">R</div>
+          <span class="online-dot"></span>
+        </div>
+        <div>
+          <div class="fw-700" id="chatPartnerName">Riya Sharma</div>
+          <div style="font-size:.75rem;color:var(--accent)"><i class="bi bi-circle-fill" style="font-size:.45rem;margin-right:.3rem"></i>Online · Python ↔ Figma</div>
+        </div>
+      </div>
+      <div class="d-flex gap-2 text-end">
+        <button class="btn btn-sm" style="border:1.5px solid var(--border);border-radius:10px;color:var(--text-muted)" title="Video call" onclick="startVideoCall()"><i class="bi bi-camera-video-fill"></i></button>
+        <div class="dropdown">
+          <button class="btn btn-sm" style="border:1.5px solid var(--border);border-radius:10px;color:var(--text-muted)" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-three-dots-vertical"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="min-width: 200px">
+            <li><a class="dropdown-item" href="#" onclick="viewProfile()"><i class="bi bi-person me-2 text-primary"></i>View Profile</a></li>
+            <li><a class="dropdown-item" href="#" onclick="exportChat()"><i class="bi bi-download me-2 text-success"></i>Export Chat</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="#" onclick="clearChat()"><i class="bi bi-trash me-2"></i>Clear Chat</a></li>
+            <li><a class="dropdown-item text-danger" href="#" onclick="blockUser()"><i class="bi bi-slash-circle me-2"></i>Block User</a></li>
+            <li><a class="dropdown-item text-warning" href="#" onclick="reportUser()"><i class="bi bi-flag me-2"></i>Report User</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="chat-messages" id="chatMessages">
+      <!-- Date divider -->
+      <div class="text-center my-2"><span style="background:var(--bg-secondary);color:var(--text-muted);font-size:.72rem;padding:.2rem .75rem;border-radius:20px">Today</span></div>
+    </div>
+
+    <!-- Emoji quick bar -->
+    <div class="emoji-bar d-flex gap-1 px-4 pt-2 pb-0" style="border-top:1px solid var(--border);background:var(--bg-card)">
+      <button onclick="addEmoji('👍')">👍</button><button onclick="addEmoji('❤️')">❤️</button>
+      <button onclick="addEmoji('😊')">😊</button><button onclick="addEmoji('🎉')">🎉</button>
+      <button onclick="addEmoji('🙌')">🙌</button><button onclick="addEmoji('🤔')">🤔</button>
+      <button onclick="addEmoji('💡')">💡</button><button onclick="addEmoji('🔥')">🔥</button>
+      <button onclick="addEmoji('✅')">✅</button><button onclick="addEmoji('🚀')">🚀</button>
+    </div>
+
+    <!-- Input area -->
+    <div class="chat-input-area">
+      <button class="btn" style="color:var(--text-muted);padding:.4rem" title="Attach file"><i class="bi bi-paperclip fs-5"></i></button>
+      <input class="chat-input" id="chatInput" placeholder="Type a message…" autocomplete="off">
+      <button class="btn" style="color:var(--text-muted);padding:.4rem" onclick="toggleEmojiPicker()" title="Emoji"><i class="bi bi-emoji-smile fs-5"></i></button>
+      <button class="chat-send-btn" id="sendBtn" onclick="sendChatMessage()"><i class="bi bi-send-fill"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDK (compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+<script src="firebase/firebase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/script.js"></script>
+<script src="js/api.js"></script>
+<script src="components/chatbot.js"></script>
+<script>
+  // ── State ────────────────────────────────────────────────────────────────────
+  let currentUID      = null;         // currently logged-in Firebase UID
+  let currentChat     = null;         // firebase_uid of active chat partner
+  let pollInterval    = null;         // setInterval handle for polling
+  let renderedMessages = new Set();   // Set to prevent duplicate messages
+  let partners        = [];           // list of active chat partners
+
+  // ── Initialise ──────────────────────────────────────────────────────────────
+  (async () => {
+    const firebaseUser = await requireAuth();
+    currentUID = firebaseUser.uid;
+    await loadPartners();
+    
+    // Poll the sidebar / online status every 5 seconds
+    setInterval(loadPartners, 5000);
+  })();
+
+  // ── Load Partners (Sidebar) ─────────────────────────────────────────────────
+  async function loadPartners() {
+    try {
+      partners = await API.getChatPartners(currentUID);
+      const list = document.getElementById('chatList');
+      if (!partners.length) {
+        list.innerHTML = `<div style="color:var(--text-muted);font-size:.85rem;padding:1.5rem;text-align:center">No active chats yet.<br><br>Find matches on the <a href="dashboard.html">Dashboard</a> or <a href="matches.html">Matches</a> tab!</div>`;
+        return;
+      }
+
+      list.innerHTML = partners.map((p, idx) => {
+        const initial = p.name.charAt(0).toUpperCase();
+        const activeClass = idx === 0 ? 'active' : '';
+        const preview = p.last_message || 'Start chatting!';
+        const time = p.last_timestamp ? formatTime(new Date(p.last_timestamp)) : '';
+        const skillsInfo = (p.teaches ? p.teaches.split(',')[0] : '') + ' ↔ ' + (p.wants ? p.wants.split(',')[0] : '');
+        
+        return `<div class="chat-user-item ${activeClass}" id="partner-${p.firebase_uid}" onclick="switchChat('${p.firebase_uid}')">
+          <div class="position-relative flex-shrink-0">
+            <div class="avatar-placeholder" style="width:44px;height:44px;font-size:1rem;background:var(--gradient-primary)">${initial}</div>
+          </div>
+          <div class="flex-grow-1 min-w-0">
+            <div class="d-flex justify-content-between">
+              <span class="fw-700" style="font-size:.88rem">${p.name}</span>
+              <span style="font-size:.72rem;color:var(--text-muted)">${time}</span>
+            </div>
+            <div style="font-size:.78rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${preview}</div>
+            <div style="font-size:.7rem;color:var(--primary)">${skillsInfo}</div>
+          </div>
+        </div>`;
+      }).join('');
+
+      // Auto-open first chat or update current chat header
+      if (!currentChat && partners.length > 0) {
+        switchChat(partners[0].firebase_uid);
+      } else if (currentChat) {
+        updateActiveChatHeader(currentChat);
+      }
+    } catch (e) {
+      console.warn('Failed to load partners', e);
+    }
+  }
+
+  function updateActiveChatHeader(uid) {
+    const partner = partners.find(p => p.firebase_uid === uid);
+    if (!partner) return;
+
+    // Update UI headers
+    document.getElementById('chatPartnerName').textContent = partner.name;
+    document.getElementById('chatPartnerAvatar').textContent = partner.name.charAt(0).toUpperCase();
+    document.getElementById('chatPartnerAvatar').style.background = 'var(--gradient-primary)';
+    
+    // Status text
+    const statusEl = document.querySelector('.chat-header .d-flex div:last-child div:last-child');
+    const dotBtn = document.querySelector('.chat-header .online-dot');
+    
+    const isOnline = !!partner.is_currently_online;
+    let statusText = 'Offline';
+    if (isOnline) {
+      statusText = 'Online';
+    } else if (partner.last_seen) {
+      // Create user friendly "Last seen at X" string
+      const d = new Date(partner.last_seen);
+      // fallback format if timeAgo function not globally available
+      statusText = `Last seen at ${formatTime(d)}`;
+    }
+    
+    const color = isOnline ? '#4ade80' : 'var(--text-muted)';
+    statusEl.innerHTML = `<i class="bi bi-circle-fill" style="font-size:.45rem;margin-right:.3rem;color:${color}"></i>${statusText}`;
+    if (dotBtn) dotBtn.style.background = color;
+  }
+
+  // ── Switch conversation ───────────────────────────────────────────────────────
+  function switchChat(uid) {
+    if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+    currentChat = uid;
+
+    updateActiveChatHeader(uid);
+    
+    document.querySelectorAll('.chat-user-item').forEach(el => el.classList.remove('active'));
+    const el = document.getElementById(`partner-${uid}`);
+    if (el) el.classList.add('active');
+
+    // Load messages
+    loadMessages().then(() => {
+      pollInterval = setInterval(pollNewMessages, 3000); // 3 seconds polling
+    });
+  }
+
+  async function loadMessages() {
+    if (!currentUID || !currentChat) return;
+    try {
+      const messages = await API.getMessages(currentUID, currentChat);
+      const msgs = document.getElementById('chatMessages');
+      
+      // Clear chat
+      msgs.innerHTML = '<div class="text-center my-2"><span style="background:var(--bg-secondary);color:var(--text-muted);font-size:.72rem;padding:.2rem .75rem;border-radius:20px">Today</span></div>';
+      renderedMessages.clear();
+      
+      messages.forEach(m => {
+        renderedMessages.add(m.chat_id);
+        const isSent = m.sender_uid === currentUID;
+        renderMessageParams(m.message, isSent ? 'sent' : 'received', m.timestamp);
+      });
+      scrollToBottom();
+    } catch (e) {
+      console.warn('Message load failed', e);
+    }
+  }
+
+  async function pollNewMessages() {
+    if (!currentUID || !currentChat) return;
+    try {
+      // Always fetch latest to ensure full sync
+      const messages = await API.getMessages(currentUID, currentChat);
+      let newAdded = false;
+      messages.forEach(m => {
+        if (!renderedMessages.has(m.chat_id)) {
+          renderedMessages.add(m.chat_id);
+          const isSent = m.sender_uid === currentUID;
+          if (!isSent && m.message.includes('Video call started')) {
+            showToast("Incoming Video Call 📹", "info");
+          }
+          renderMessageParams(m.message, isSent ? 'sent' : 'received', m.timestamp);
+          newAdded = true;
+        }
+      });
+      if (newAdded) scrollToBottom();
+    } catch (e) {
+      console.warn('Poll failed', e);
+    }
+  }
+
+  // ── Message helpers ───────────────────────────────────────────────────────────
+  function formatTime(d) {
+    if (!d || isNaN(d.getTime())) return '';
+    return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function renderMessageParams(text, type, timestampStr) {
+    const msgs = document.getElementById('chatMessages');
+    const wrapper = document.createElement('div');
+    wrapper.className = `d-flex flex-column align-items-${type === 'sent' ? 'end' : 'start'}`;
+    const bubble = document.createElement('div');
+    bubble.className = `message-bubble ${type}`;
+    const timeStr = timestampStr ? formatTime(new Date(timestampStr)) : formatTime(new Date());
+
+    let displayHtml = text;
+    if (text.includes('Video call started')) {
+      const linkMatch = text.match(/https:\/\/\S+/);
+      const meetingLink = linkMatch ? linkMatch[0] : '#';
+      
+      displayHtml = `
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <i class="bi bi-camera-video-fill fs-5"></i>
+          <strong>Video Call Started</strong>
+        </div>
+        <a href="${meetingLink}" target="_blank" class="btn btn-sm text-center mt-1 w-100" style="background:rgba(255,255,255,0.2);color:inherit;font-weight:600;border:1px solid rgba(255,255,255,0.3)">Join Meeting</a>
+      `;
+    }
+
+    bubble.innerHTML = `${displayHtml}<span class="message-time">${timeStr}</span>`;
+    wrapper.appendChild(bubble);
+    msgs.appendChild(wrapper);
+  }
+
+  function scrollToBottom() {
+    const msgs = document.getElementById('chatMessages');
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  // ── Messaging ─────────────────────────────────────────────────────────────────
+  async function sendMessage(e) {
+    if (e) e.preventDefault();
+    if (!currentUID || !currentChat) return;
+
+    const input = document.getElementById('chatInput');
+    const btn = document.getElementById('sendBtn');
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    btn.disabled = true;
+    input.value = '';
+    const myName = (ssAuth.currentUser && ssAuth.currentUser.displayName) ? ssAuth.currentUser.displayName : 'Your Partner';
+
+    try {
+      await API.sendMessage(currentChat, msg);
+      await API.addNotification(currentChat, 'message', `📩 New message from ${myName}`);
+      await loadMessages();
+    } catch (e) {
+      showToast('Failed to send message: ' + e.message, 'danger');
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+
+  // ── Video Call ──────────────────────────────────────────────────────────────────
+  window.startVideoCall = async function() {
+    if (!currentUID || !currentChat) {
+      showToast('Please select a chat partner first.', 'warning');
+      return;
+    }
+    
+    try {
+      const meetLink = "https://meet.google.com/qbn-xrti-cxn";
+      window.open(meetLink, "_blank");
+      
+      const msg = "📹 Video call started. Join here: " + meetLink;
+      const myName = (ssAuth.currentUser && ssAuth.currentUser.displayName) ? ssAuth.currentUser.displayName : 'someone';
+      await API.sendMessage(currentChat, msg);
+      await API.addNotification(currentChat, 'video_call', `📹 Incoming video call from ${myName}`);
+      await loadMessages();
+      
+      await authFetch('api/send_call_email.php', {
+        method: 'POST',
+        body: JSON.stringify({ receiver_uid: currentChat })
+      }).catch(e => console.warn('Email notification bypass', e));
+
+    } catch (e) {
+      showToast('Failed to send call link: ' + e.message, 'danger');
+    }
+  };
+
+  // ── Moderation & Options ───────────────────────────────────────────────────────
+  window.viewProfile = function() {
+    if(!currentUID || !currentChat) return;
+    window.location.href = 'profile.html?user_id=' + currentChat;
+  };
+
+  window.exportChat = async function() {
+    if(!currentUID || !currentChat) return;
+    try {
+      const msgs = await API.getMessages(currentUID, currentChat);
+      let txt = "Skill Swap Chat Export\n=====================\n\n";
+      msgs.forEach(m => {
+        const time = formatTime(new Date(m.timestamp));
+        const sender = m.sender_uid === currentUID ? "You" : "Partner";
+        txt += `[${time}] ${sender}: ${m.message}\n`;
+      });
+      const blob = new Blob([txt], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `skillswap-chat-${currentChat.substring(0,6)}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      showToast('Failed to export chat', 'danger');
+    }
+  };
+
+  async function clearChat() {
+    if(!currentUID || !currentChat) return;
+    if(confirm("Are you sure you want to clear this chat? All message data currently existing between you and this user will be erased permanently.")) {
+      try {
+        await API.clearChat(currentChat);
+        await loadMessages();
+        showToast("Chat history cleared.", "success");
+      } catch(e) {
+        showToast(e.message, "danger");
+      }
+    }
+  }
+
+  async function blockUser() {
+    if(!currentUID || !currentChat) return;
+    if(confirm("Are you sure you want to block this user? You will not be able to interact with them anymore.")) {
+      try {
+        await API.blockUser(currentChat);
+        showToast("User successfully blocked.", "success");
+        document.getElementById('chatInput').disabled = true;
+        document.getElementById('sendBtn').disabled = true;
+      } catch(e) {
+        showToast(e.message, "danger");
+      }
+    }
+  }
+
+  async function reportUser() {
+    if(!currentUID || !currentChat) return;
+    const reason = prompt("Help us keep Skill Swap safe.\nPlease enter a reason for reporting this user:");
+    if(reason !== null && reason.trim() !== '') {
+      try {
+        await API.reportUser(currentChat, reason.trim());
+        showToast("User reported submitted for admin review.", "success");
+      } catch(e) {
+        showToast(e.message, "danger");
+      }
+    }
+  }
+
+  function addEmoji(e) {
+    const input = document.getElementById('chatInput');
+    input.value += e;
+    input.focus();
+  }
+
+  function toggleEmojiPicker() {
+    showToast('Full emoji picker coming soon!', 'info');
+  }
+
+  document.getElementById('chatInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  });
+</script>
+</body>
+</html>

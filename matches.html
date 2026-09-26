@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Find users with complementary skills on Skill Swap.">
+  <title>Skill Matches — Skill Swap</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+  <div class="container">
+    <a class="navbar-brand" href="index.html"><i class="bi bi-arrow-left-right me-2"></i>SkillSwap</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#matchNav">
+      <i class="bi bi-list fs-4" style="color:var(--text)"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="matchNav">
+      <ul class="navbar-nav mx-auto gap-1">
+        <li class="nav-item"><a class="nav-link" href="dashboard.html">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link active" href="matches.html">Find Matches</a></li>
+        <li class="nav-item"><a class="nav-link" href="requests.html">Requests</a></li>
+        <li class="nav-item"><a class="nav-link" href="chat.html">Chat</a></li>
+        <li class="nav-item"><a class="nav-link" href="reviews.html">Reviews</a></li>
+      </ul>
+      <div class="d-flex align-items-center gap-3">
+        <button class="dark-toggle" aria-label="Toggle theme"></button>
+        <i id="themeIcon" class="bi bi-moon-fill" style="color:var(--text-muted);font-size:.9rem"></i>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Page Header -->
+<div class="page-header text-white">
+  <div class="container text-center">
+    <h1 class="fw-800 mb-2"><i class="bi bi-people me-2"></i>Find Your Skill Match</h1>
+    <p style="opacity:.85;font-size:1.05rem">Discover users with perfectly complementary skills</p>
+    <!-- Search -->
+    <div class="row justify-content-center mt-3">
+      <div class="col-md-6">
+        <div class="position-relative">
+          <i class="bi bi-search" style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.6);z-index:1"></i>
+          <input type="text" id="matchSearch" placeholder="Search by skill or name…" oninput="filterMatches(this.value)"
+            style="width:100%;padding:.75rem .75rem .75rem 3rem;border-radius:50px;border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.15);backdrop-filter:blur(8px);color:#fff;outline:none;font-family:'Inter',sans-serif;font-size:.95rem">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container py-5">
+  <!-- Filters row -->
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+    <div class="d-flex flex-wrap gap-2">
+      <button class="btn btn-sm rounded-pill active" style="background:var(--primary);color:#fff;border:none" onclick="setFilter('all',this)">All</button>
+      <button class="btn btn-sm rounded-pill" style="border:1.5px solid var(--border);color:var(--text-muted)" onclick="setFilter('tech',this)">💻 Tech</button>
+      <button class="btn btn-sm rounded-pill" style="border:1.5px solid var(--border);color:var(--text-muted)" onclick="setFilter('design',this)">🎨 Design</button>
+      <button class="btn btn-sm rounded-pill" style="border:1.5px solid var(--border);color:var(--text-muted)" onclick="setFilter('language',this)">🌍 Languages</button>
+      <button class="btn btn-sm rounded-pill" style="border:1.5px solid var(--border);color:var(--text-muted)" onclick="setFilter('music',this)">🎵 Music</button>
+      <button class="btn btn-sm rounded-pill" style="border:1.5px solid var(--border);color:var(--text-muted)" onclick="setFilter('business',this)">📊 Business</button>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <span style="color:var(--text-muted);font-size:.85rem">Sort by:</span>
+      <select class="form-select form-control-custom" style="width:140px;font-size:.85rem;padding:.3rem .75rem">
+        <option>Best Match</option>
+        <option>Highest Rated</option>
+        <option>Newest</option>
+        <option>Most Active</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Match stats -->
+  <div class="alert rounded-3 mb-4 d-flex align-items-center gap-3" style="background:rgba(108,99,255,.06);border:1px solid rgba(108,99,255,.15)">
+    <i class="bi bi-stars fs-4" style="color:var(--primary)"></i>
+    <div>
+      <strong>12 matches found</strong> based on your skill profile.
+      <span style="color:var(--text-muted)"> Update your <a href="add-skills.html">skills</a> to see more matches.</span>
+    </div>
+  </div>
+
+  <!-- Cards grid -->
+  <div class="row g-4" id="matchCards">
+
+    <!-- Card template function fills these -->
+    <div class="col-md-6 col-xl-4" data-card data-skills="python machine learning tech">
+      <div class="match-card" style="height:100%">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="avatar-placeholder" style="background:linear-gradient(135deg,#6c63ff,#a78bfa)">R</div>
+            <div>
+              <div class="fw-700">Riya Sharma</div>
+              <div style="font-size:.78rem;color:var(--text-muted)"><i class="bi bi-geo-alt me-1"></i>Mumbai, India</div>
+            </div>
+          </div>
+          <span class="badge rounded-pill" style="background:rgba(40,167,69,.1);color:#1a6e30;font-size:.7rem;padding:.3rem .7rem">🎯 Top Match</span>
+        </div>
+        <div class="mb-2">
+          <small class="fw-700 text-uppercase" style="color:var(--text-muted);letter-spacing:1px;font-size:.68rem">TEACHES</small>
+          <div class="skill-cloud mt-1">
+            <span class="badge-skill"><i class="bi bi-code-slash"></i>Python</span>
+            <span class="badge-skill"><i class="bi bi-robot"></i>ML</span>
+          </div>
+        </div>
+        <div class="mb-3">
+          <small class="fw-700 text-uppercase" style="color:var(--text-muted);letter-spacing:1px;font-size:.68rem">WANTS TO LEARN</small>
+          <div class="skill-cloud mt-1">
+            <span class="badge-skill" style="background:rgba(255,101,132,.1);color:var(--secondary);border-color:rgba(255,101,132,.2)"><i class="bi bi-palette"></i>Figma</span>
+          </div>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="stars">★★★★★<span style="color:var(--text-muted);font-size:.78rem;margin-left:.3rem">(24 reviews)</span></div>
+          <span style="font-size:.78rem;color:var(--accent)"><i class="bi bi-circle-fill" style="font-size:.5rem;margin-right:.3rem"></i>Online</span>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary-custom flex-grow-1 btn-sm" onclick="sendRequest(this,'Riya Sharma')"><i class="bi bi-send me-2"></i>Send Request</button>
+          <button class="btn btn-sm" style="border:1.5px solid var(--border);border-radius:10px;width:38px;color:var(--text-muted)" onclick="this.style.color='var(--secondary)';this.style.borderColor='var(--secondary)'" title="Save"><i class="bi bi-heart"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-xl-4" data-card data-skills="photography camera design">
+      <div class="match-card" style="height:100%">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="avatar-placeholder" style="background:linear-gradient(135deg,#ff6584,#ffb347)">J</div>
+            <div>
+              <div class="fw-700">James Okafor</div>
+              <div style="font-size:.78rem;color:var(--text-muted)"><i class="bi bi-geo-alt me-1"></i>Lagos, Nigeria</div>
+            </div>
+          </div>
+        </div>
+        <div class="mb-2">
+          <small class="fw-700 text-uppercase" style="color:var(--text-muted);letter-spacing:1px;font-size:.68rem">TEACHES</small>
+          <div class="skill-cloud mt-1">
+            <span class="badge-skill"><i class="bi bi-camera"></i>Photography</span>
+            <span class="badge-skill"><i class="bi bi-youtube"></i>Video</span>
+          </div>
+        </div>
+        <div class="mb-3">
+          <small class="fw-700 text-uppercase" style="color:var(--text-muted);letter-spacing:1px;font-size:.68rem">WANTS TO LEARN</small>
+          <div class="skill-cloud mt-1">
+            <span class="badge-skill" style="background:rgba(255,101,132,.1);color:var(--secondary);border-color:rgba(255,101,132,.2)"><i class="bi bi-graph-up"></i>Data Science</span>
+          </div>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="stars">★★★★☆<span style="color:var(--text-muted);font-size:.78rem;margin-left:.3rem">(18 reviews)</span></div>
+          <span style="font-size:.78rem;color:var(--text-muted)"><i class="bi bi-circle-fill" style="font-size:.5rem;margin-right:.3rem"></i>2h ago</span>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary-custom flex-grow-1 btn-sm" onclick="sendRequest(this,'James Okafor')"><i class="bi bi-send me-2"></i>Send Request</button>
+          <button class="btn btn-sm" style="border:1.5px solid var(--border);border-radius:10px;width:38px;color:var(--text-muted)" onclick="this.style.color='var(--secondary)';this.style.borderColor='var(--secondary)'" title="Save"><i class="bi bi-heart"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-xl-4" data-card data-skills="spanish language french translate">
+      <div class="match-card" style="height:100%">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="avatar-placeholder" style="background:linear-gradient(135deg,#43d2c6,#1a9487)">S</div>
+            <div>
+              <div class="fw-700">Sofia Matos</div>
+              <div style="font-size:.78rem;color:var(--text-muted)"><i class="bi bi-geo-alt me-1"></i>São Paulo, Brazil</div>
+            </div>
+          </div>
+          <span class="badge rounded-pill" style="background:rgba(255,193,7,.1);color:#b07d00;font-size:.7rem;padding:.3rem .7rem">⭐ Top Rated</span>
+        </div>
+        <div class="mb-2">
+          <small class="fw-700 text-uppercase" style="color:var(--text-muted);letter-spacing:1px;font-size:.68rem">TEACHES</small>
+          <div class="skill-cloud mt-1">
+            <span class="badge-skill"><i class="bi bi-translate"></i>Spanish</span>
+            <span class="badge-skill"><i class="bi bi-translate"></i>Portuguese</span>
+          </div>
+        </div>
+        <div class="mb-3">
+          <small class="fw-700 text-uppercase" style="color:var(--text-muted);letter-spacing:1px;font-size:.68rem">WANTS TO LEARN</small>
+          <div class="skill-cloud mt-1">
+            <span class="badge-skill" style="background:rgba(255,101,132,.1);color:var(--secondary);border-color:rgba(255,101,132,.2)"><i class="bi bi-music-note"></i>Guitar</span>
+          </div>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="stars">★★★★★<span style="color:var(--text-muted);font-size:.78rem;margin-left:.3rem">(31 reviews)</span></div>
+          <span style="font-size:.78rem;color:var(--accent)"><i class="bi bi-circle-fill" style="font-size:.5rem;margin-right:.3rem"></i>Online</span>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary-custom flex-grow-1 btn-sm" onclick="sendRequest(this,'Sofia Matos')"><i class="bi bi-send me-2"></i>Send Request</button>
+          <button class="btn btn-sm" style="border:1.5px solid var(--border);border-radius:10px;width:38px;color:var(--text-muted)" onclick="this.style.color='var(--secondary)';this.style.borderColor='var(--secondary)'" title="Save"><i class="bi bi-heart"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-xl-4" data-card data-skills="video editing youtube design">
+      <div class="match-card" style="height:100%">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="avatar-placeholder" style="background:linear-gradient(135deg,#ff8b32,#ffcf54)">L</div>
+            <div>
+              <div class="fw-700">Liam Chen</div>
+              <div style="font-size:.78rem;color:var(--text-muted)"><i class="bi bi-geo-alt me-1"></i>Singapore</div>
+            </div>
+          </div>
+        </div>
+        <div class="mb-2">
+          <small class="fw-700 text-uppercase" style="color:var(--text-muted);letter-spacing:1px;font-size:.68rem">TEACHES</small>
+          <div class="skill-cloud mt-1">
+            <span class="badge-skill"><i class="bi bi-youtube"></i>Video Editing</span>
+            <span class="badge-skill"><i class="bi bi-camera-video"></i>DaVinci</span>
+          </div>
+        </div>
+        <div class="mb-3">
+          <small class="fw-700 text-uppercase" style="color:var(--text-muted);letter-spacing:1px;font-size:.68rem">WANTS TO LEARN</small>
+          <div class="skill-cloud mt-1">
+            <span class="badge-skill" style="background:rgba(255,101,132,.1);color:var(--secondary);border-color:rgba(255,101,132,.2)"><i class="bi bi-app"></i>React</span>
+          </div>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="stars">★★★★☆<span style="color:var(--text-muted);font-size:.78rem;margin-left:.3rem">(12 reviews)</span></div>
+          <span style="font-size:.78rem;color:var(--text-muted)"><i class="bi bi-circle-fill" style="font-size:.5rem;margin-right:.3rem"></i>1d ago</span>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary-custom flex-grow-1 btn-sm" onclick="sendRequest(this,'Liam Chen')"><i class="bi bi-send me-2"></i>Send Request</button>
+          <button class="btn btn-sm" style="border:1.5px solid var(--border);border-radius:10px;width:38px;color:var(--text-muted)" onclick="this.style.color='var(--secondary)';this.style.borderColor='var(--secondary)'" title="Save"><i class="bi bi-heart"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-xl-4" data-card data-skills="guitar music piano">
+      <div class="match-card" style="height:100%">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="avatar-placeholder" style="background:linear-gradient(135deg,#a78bfa,#7c3aed)">K</div>
+            <div>
+              <div class="fw-700">Kenji Tanaka</div>
+              <div style="font-size:.78rem;color:var(--text-muted)"><i class="bi bi-geo-alt me-1"></i>Tokyo, Japan</div>
+            </div>
+          </div>
+        </div>
+        <div class="mb-2">
+          <small class="fw-700 text-uppercase" style="color:var(--text-muted);letter-spacing:1px;font-size:.68rem">TEACHES</small>
+          <div class="skill-cloud mt-1">
+            <span class="badge-skill"><i class="bi bi-music-note-beamed"></i>Guitar</span>
+            <span class="badge-skill"><i class="bi bi-music-note"></i>Piano</span>
+          </div>
+        </div>
+        <div class="mb-3">
+          <small class="fw-700 text-uppercase" style="color:var(--text-muted);letter-spacing:1px;font-size:.68rem">WANTS TO LEARN</small>
+          <div class="skill-cloud mt-1">
+            <span class="badge-skill" style="background:rgba(255,101,132,.1);color:var(--secondary);border-color:rgba(255,101,132,.2)"><i class="bi bi-palette"></i>UI Design</span>
+          </div>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="stars">★★★★★<span style="color:var(--text-muted);font-size:.78rem;margin-left:.3rem">(45 reviews)</span></div>
+          <span style="font-size:.78rem;color:var(--accent)"><i class="bi bi-circle-fill" style="font-size:.5rem;margin-right:.3rem"></i>Online</span>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary-custom flex-grow-1 btn-sm" onclick="sendRequest(this,'Kenji Tanaka')"><i class="bi bi-send me-2"></i>Send Request</button>
+          <button class="btn btn-sm" style="border:1.5px solid var(--border);border-radius:10px;width:38px;color:var(--text-muted)" onclick="this.style.color='var(--secondary)';this.style.borderColor='var(--secondary)'" title="Save"><i class="bi bi-heart"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-xl-4" data-card data-skills="seo marketing business digital">
+      <div class="match-card" style="height:100%">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="avatar-placeholder" style="background:linear-gradient(135deg,#f97316,#ef4444)">E</div>
+            <div>
+              <div class="fw-700">Emma Davis</div>
+              <div style="font-size:.78rem;color:var(--text-muted)"><i class="bi bi-geo-alt me-1"></i>London, UK</div>
+            </div>
+          </div>
+        </div>
+        <div class="mb-2">
+          <small class="fw-700 text-uppercase" style="color:var(--text-muted);letter-spacing:1px;font-size:.68rem">TEACHES</small>
+          <div class="skill-cloud mt-1">
+            <span class="badge-skill"><i class="bi bi-megaphone"></i>SEO</span>
+            <span class="badge-skill"><i class="bi bi-graph-up-arrow"></i>Marketing</span>
+          </div>
+        </div>
+        <div class="mb-3">
+          <small class="fw-700 text-uppercase" style="color:var(--text-muted);letter-spacing:1px;font-size:.68rem">WANTS TO LEARN</small>
+          <div class="skill-cloud mt-1">
+            <span class="badge-skill" style="background:rgba(255,101,132,.1);color:var(--secondary);border-color:rgba(255,101,132,.2)"><i class="bi bi-camera"></i>Photography</span>
+          </div>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="stars">★★★★☆<span style="color:var(--text-muted);font-size:.78rem;margin-left:.3rem">(9 reviews)</span></div>
+          <span style="font-size:.78rem;color:var(--text-muted)"><i class="bi bi-circle-fill" style="font-size:.5rem;margin-right:.3rem"></i>3h ago</span>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary-custom flex-grow-1 btn-sm" onclick="sendRequest(this,'Emma Davis')"><i class="bi bi-send me-2"></i>Send Request</button>
+          <button class="btn btn-sm" style="border:1.5px solid var(--border);border-radius:10px;width:38px;color:var(--text-muted)" onclick="this.style.color='var(--secondary)';this.style.borderColor='var(--secondary)'" title="Save"><i class="bi bi-heart"></i></button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end row -->
+
+  <!-- No results -->
+  <div id="noResults" class="text-center py-5 d-none">
+    <div style="font-size:3rem">🔍</div>
+    <h5 class="mt-2">No matches found</h5>
+    <p style="color:var(--text-muted)">Try a different search term or category</p>
+  </div>
+</div>
+
+<!-- Send request modal -->
+<div class="modal fade" id="requestModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-700">Send Skill Swap Request</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body pt-2">
+        <p style="color:var(--text-muted);font-size:.9rem">Sending a request to <strong id="requestTargetName"></strong>. Add a personal message:</p>
+        <textarea class="form-control form-control-custom" rows="3" placeholder="Hi! I'd love to swap skills. I can teach you Python and would love to learn Figma from you!" id="requestMessage"></textarea>
+      </div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-outline-custom" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary-custom" onclick="confirmRequest()"><i class="bi bi-send me-2"></i>Send Request</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDK (compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+<script src="firebase/firebase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/script.js"></script>
+<script src="js/api.js"></script>
+<script src="components/chatbot.js"></script>
+<script>
+  let allMatches = [];
+  let pendingBtn = null;
+  let pendingReceiverUID = null;
+
+  // ── Load real matches ───────────────────────────────────────────────────────────
+  (async () => {
+    const firebaseUser = await requireAuth();
+    try {
+      allMatches = await API.matchUsers(firebaseUser.uid);
+      renderMatches(allMatches);
+      document.querySelector('.alert strong').textContent =
+        `${allMatches.length} match${allMatches.length !== 1 ? 'es' : ''} found`;
+    } catch (e) {
+      console.warn('Matches load error', e);
+      // Keep static demo cards if API fails
+    }
+  })();
+
+  const gradients = [
+    'linear-gradient(135deg,#6c63ff,#a78bfa)',
+    'linear-gradient(135deg,#ff6584,#ffb347)',
+    'linear-gradient(135deg,#43d2c6,#1a9487)',
+    'linear-gradient(135deg,#a78bfa,#7c3aed)',
+    'linear-gradient(135deg,#ff8b32,#ffcf54)',
+    'linear-gradient(135deg,#f97316,#ef4444)',
+  ];
+
+  function renderMatches(matches) {
+    const grid = document.getElementById('matchCards');
+    if (!matches.length) {
+      grid.innerHTML = '';
+      document.getElementById('noResults').classList.remove('d-none');
+      return;
+    }
+    grid.innerHTML = matches.map((m, i) => {
+      const initial  = m.name.charAt(0).toUpperCase();
+      const gradient = gradients[i % gradients.length];
+      const stars    = '★'.repeat(Math.round(m.avg_rating || 0)) + '☆'.repeat(5 - Math.round(m.avg_rating || 0));
+      const teaches  = m.teaches.map(s => `<span class="badge-skill"><i class="bi bi-mortarboard"></i>${s}</span>`).join('');
+      const wants    = m.wants.map(s => `<span class="badge-skill" style="background:rgba(255,101,132,.1);color:var(--secondary);border-color:rgba(255,101,132,.2)"><i class="bi bi-lightbulb"></i>${s}</span>`).join('');
+      return `
+        <div class="col-md-6 col-xl-4" data-card data-skills="${m.teaches.join(' ')} ${m.wants.join(' ')} ${m.name}">
+          <div class="match-card" style="height:100%">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div class="d-flex align-items-center gap-3">
+                <div class="avatar-placeholder" style="background:${gradient}">${initial}</div>
+                <div>
+                  <div class="fw-700">${m.name}</div>
+                  <div style="font-size:.78rem;color:var(--text-muted)"><i class="bi bi-envelope me-1"></i>${m.email}</div>
+                </div>
+              </div>
+              ${m.avg_rating >= 4.5 ? '<span class="badge rounded-pill" style="background:rgba(40,167,69,.1);color:#1a6e30;font-size:.7rem;padding:.3rem .7rem">🎯 Top Match</span>' : ''}
+            </div>
+            <div class="mb-2">
+              <small class="fw-700 text-uppercase" style="color:var(--text-muted);letter-spacing:1px;font-size:.68rem">TEACHES</small>
+              <div class="skill-cloud mt-1">${teaches || '<span style="color:var(--text-muted);font-size:.82rem">Not specified</span>'}</div>
+            </div>
+            <div class="mb-3">
+              <small class="fw-700 text-uppercase" style="color:var(--text-muted);letter-spacing:1px;font-size:.68rem">WANTS TO LEARN</small>
+              <div class="skill-cloud mt-1">${wants || '<span style="color:var(--text-muted);font-size:.82rem">Not specified</span>'}</div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="stars">${stars}<span style="color:var(--text-muted);font-size:.78rem;margin-left:.3rem">(${m.review_count} reviews)</span></div>
+            </div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-primary-custom flex-grow-1 btn-sm" onclick="sendRequest(this, '${m.firebase_uid}', '${m.name}')">
+                <i class="bi bi-send me-2"></i>Send Request
+              </button>
+              <button class="btn btn-sm" style="border:1.5px solid var(--border);border-radius:10px;width:38px;color:var(--text-muted)" onclick="this.style.color='var(--secondary)';this.style.borderColor='var(--secondary)'" title="Save">
+                <i class="bi bi-heart"></i>
+              </button>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // ── Request modal flow ───────────────────────────────────────────────────────
+  function sendRequest(btn, receiverUID, name) {
+    pendingBtn         = btn;
+    pendingReceiverUID = receiverUID;
+    document.getElementById('requestTargetName').textContent = name;
+    document.getElementById('requestMessage').value = '';
+    new bootstrap.Modal(document.getElementById('requestModal')).show();
+  }
+
+  async function confirmRequest() {
+    bootstrap.Modal.getInstance(document.getElementById('requestModal')).hide();
+    if (!pendingBtn || !pendingReceiverUID) return;
+
+    const message = document.getElementById('requestMessage').value.trim();
+    try {
+      await API.sendRequest(pendingReceiverUID, message);
+      pendingBtn.disabled = true;
+      pendingBtn.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i>Request Sent!';
+      pendingBtn.style.background = 'rgba(40,167,69,.15)';
+      pendingBtn.style.color = '#28a745';
+      showToast('Swap request sent successfully!', 'success');
+    } catch (e) {
+      showToast(e.message || 'Failed to send request.', 'danger');
+    }
+  }
+
+  // ── Search / filter (unchanged logic) ──────────────────────────────────────────
+  function filterMatches(q) {
+    q = q.toLowerCase();
+    let visible = 0;
+    document.querySelectorAll('[data-card]').forEach(card => {
+      const text = card.textContent.toLowerCase() + (card.dataset.skills || '');
+      const show = !q || text.includes(q);
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    document.getElementById('noResults').classList.toggle('d-none', visible > 0);
+  }
+
+  function setFilter(cat, btn) {
+    document.querySelectorAll('[onclick^="setFilter"]').forEach(b => {
+      b.style.background = ''; b.style.color = 'var(--text-muted)'; b.style.border = '1.5px solid var(--border)';
+    });
+    btn.style.background = 'var(--primary)'; btn.style.color = '#fff'; btn.style.border = 'none';
+
+    const catMap = { all: '', tech: 'tech python javascript node react', design: 'design figma photoshop', language: 'spanish french japanese mandarin', music: 'guitar piano music', business: 'seo marketing digital' };
+    filterMatches(catMap[cat] || '');
+    if (cat === 'all') document.querySelectorAll('[data-card]').forEach(c => c.style.display = '');
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Track learning sessions, take quizzes, and earn certificates on SkillSwap.">
+  <title>Learning Sessions &amp; Certificates — SkillSwap</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ── Session Panel ── */
+    .session-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.6rem;
+      transition: var(--trans);
+    }
+    .session-card:hover { box-shadow: 0 8px 28px rgba(108,99,255,.1); }
+
+    #ss-timer-box {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: .6rem;
+      background: linear-gradient(135deg,rgba(108,99,255,.1),rgba(255,101,132,.08));
+      border: 1px solid rgba(108,99,255,.2);
+      border-radius: 14px;
+      padding: .8rem 1.4rem;
+      margin: .8rem 0;
+    }
+    #ss-timer {
+      font-family: 'Courier New', monospace;
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: 2px;
+    }
+    .ss-status-dot { font-size: .82rem; color: var(--text-muted); }
+    .ss-status-dot.active { color: #22c55e; font-weight: 600; }
+
+    /* Progress bar custom */
+    .prog-bar-wrap { height: 10px; background: var(--bg-secondary); border-radius: 30px; overflow: hidden; }
+    .prog-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 30px;
+      transition: width .5s ease;
+    }
+
+    /* ── Quiz Modal ── */
+    #quizModal .modal-dialog { max-width: 720px; }
+    #quizModal .modal-content { border-radius: 20px; border: none; overflow: hidden; }
+    #quizModal .modal-header {
+      background: linear-gradient(135deg, #6c63ff, #a78bfa);
+      color: #fff;
+      border: none;
+      padding: 1.4rem 1.8rem;
+    }
+    #quizModal .modal-header .btn-close { filter: invert(1); }
+
+    .quiz-q-card {
+      background: var(--bg-secondary);
+      border-radius: 14px;
+      padding: 1.2rem 1.4rem;
+    }
+    .quiz-q-num {
+      display: inline-flex;
+      width: 26px; height: 26px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 50%;
+      align-items: center;
+      justify-content: center;
+      font-size: .78rem;
+      font-weight: 700;
+      margin-right: .5rem;
+      flex-shrink: 0;
+    }
+    .quiz-option {
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+      padding: .6rem .9rem;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      margin-bottom: .4rem;
+      cursor: pointer;
+      transition: var(--trans);
+      background: var(--bg-card);
+    }
+    .quiz-option:hover { border-color: var(--primary); background: rgba(108,99,255,.05); }
+    .quiz-option input[type="radio"] { display: none; }
+    .quiz-option:has(input:checked) {
+      border-color: var(--primary);
+      background: rgba(108,99,255,.1);
+    }
+    .quiz-opt-letter {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; font-weight: 700;
+      flex-shrink: 0;
+      transition: var(--trans);
+    }
+    .quiz-option:has(input:checked) .quiz-opt-letter {
+      background: var(--primary); color: #fff;
+    }
+
+    /* Quiz result */
+    #quiz-result-container { text-align: center; padding: 2rem 1rem; }
+    #quiz-result-icon   { font-size: 4rem; line-height: 1; }
+    #quiz-score-circle  {
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      color: #fff; margin: 1rem auto;
+      font-weight: 800;
+    }
+    #quiz-score-num { font-size: 1.8rem; line-height: 1; }
+
+    /* Partner selector pills */
+    .partner-pill {
+      display: flex; align-items: center; gap: .75rem;
+      padding: .85rem 1.1rem;
+      border-radius: 14px;
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      transition: var(--trans);
+      background: var(--bg-card);
+    }
+    .partner-pill:hover, .partner-pill.selected {
+      border-color: var(--primary);
+      background: rgba(108,99,255,.06);
+    }
+    .partner-pill .avatar-sm {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; color: #fff; font-size: .9rem;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+  <div class="container">
+    <a class="navbar-brand" href="index.html"><i class="bi bi-arrow-left-right me-2"></i>SkillSwap</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sessionNav">
+      <i class="bi bi-list fs-4" style="color:var(--text)"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="sessionNav">
+      <ul class="navbar-nav mx-auto gap-1">
+        <li class="nav-item"><a class="nav-link" href="dashboard.html">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="matches.html">Matches</a></li>
+        <li class="nav-item"><a class="nav-link" href="requests.html">Requests</a></li>
+        <li class="nav-item"><a class="nav-link active" href="sessions.html">Sessions</a></li>
+        <li class="nav-item"><a class="nav-link" href="chat.html">Chat</a></li>
+      </ul>
+      <div class="d-flex align-items-center gap-3">
+        <button class="dark-toggle" aria-label="Toggle theme"></button>
+        <i id="themeIcon" class="bi bi-moon-fill" style="color:var(--text-muted);font-size:.9rem"></i>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Page Header -->
+<div class="page-header text-white text-center">
+  <div class="container">
+    <h1 class="fw-800 mb-2"><i class="bi bi-journal-check me-2"></i>Learning Sessions</h1>
+    <p style="opacity:.85">Track your sessions, pass the quiz, earn your certificate</p>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-4">
+
+    <!-- LEFT: Session Controls -->
+    <div class="col-lg-5">
+
+      <!-- Partner / Skill Selection -->
+      <div class="session-card mb-4">
+        <h5 class="fw-700 mb-1"><i class="bi bi-people me-2" style="color:var(--primary)"></i>Select Partner &amp; Skill</h5>
+        <p style="font-size:.83rem;color:var(--text-muted)" class="mb-3">Choose who you're learning with</p>
+
+        <!-- Partners populated from accepted requests -->
+        <div id="partner-list" class="d-flex flex-column gap-2 mb-3">
+          <!-- Demo partners (replace with real fetch from get_requests.php) -->
+          <div class="partner-pill selected" onclick="selectPartner(this,'riya-uid-demo','Riya Sharma',5)"
+               data-uid="riya-uid-demo" data-name="Riya Sharma" data-skill-id="5">
+            <div class="avatar-sm" style="background:linear-gradient(135deg,#6c63ff,#a78bfa)">R</div>
+            <div class="flex-grow-1">
+              <div class="fw-600" style="font-size:.88rem">Riya Sharma</div>
+              <div style="font-size:.75rem;color:var(--text-muted)">Python · Skill ID 5</div>
+            </div>
+            <i class="bi bi-check-circle-fill text-primary" style="display:none" id="check-riya"></i>
+          </div>
+          <div class="partner-pill" onclick="selectPartner(this,'sofia-uid-demo','Sofia Matos',2)"
+               data-uid="sofia-uid-demo" data-name="Sofia Matos" data-skill-id="2">
+            <div class="avatar-sm" style="background:linear-gradient(135deg,#43d2c6,#1a9487)">S</div>
+            <div class="flex-grow-1">
+              <div class="fw-600" style="font-size:.88rem">Sofia Matos</div>
+              <div style="font-size:.75rem;color:var(--text-muted)">Python ↔ Spanish · Skill ID 2</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hidden state fields -->
+        <input type="hidden" id="selected-teacher-uid" value="riya-uid-demo">
+        <input type="hidden" id="selected-skill-id"    value="5">
+      </div>
+
+      <!-- Session Panel -->
+      <div class="session-card mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-700 mb-0"><i class="bi bi-camera-video me-2" style="color:var(--primary)"></i>Session Controls</h5>
+          <span id="ss-status-dot" class="ss-status-dot">⚪ No Active Session</span>
+        </div>
+
+        <!-- Timer -->
+        <div id="ss-timer-box">
+          <i class="bi bi-stopwatch-fill text-primary fs-5"></i>
+          <span id="ss-timer">00:00</span>
+          <span style="font-size:.78rem;color:var(--text-muted)">Session running…</span>
+        </div>
+
+        <div class="d-flex flex-column gap-2">
+          <button id="ss-start-btn" class="btn btn-primary-custom"
+            onclick="startLearningSession(
+              document.getElementById('selected-teacher-uid').value,
+              parseInt(document.getElementById('selected-skill-id').value),
+              'ss-start-btn'
+            )">
+            <i class="bi bi-play-circle-fill me-2"></i>Start Session &amp; Open Meet
+          </button>
+
+          <button id="ss-end-btn" class="btn" disabled style="opacity:.5;border:1.5px solid var(--danger);color:var(--danger);border-radius:30px;font-weight:600;padding:.65rem 1.4rem"
+            onclick="endLearningSession('ss-end-btn')">
+            <i class="bi bi-stop-circle-fill me-2"></i>End Session
+          </button>
+        </div>
+
+        <p class="mt-3 mb-0" style="font-size:.78rem;color:var(--text-muted)">
+          <i class="bi bi-info-circle me-1"></i>Sessions must be ≥15 minutes to count. You need 3 sessions + 60 total minutes to unlock the certificate quiz.
+        </p>
+      </div>
+
+      <!-- Certificate Button (hidden until eligible) -->
+      <div id="ss-cert-section" style="display:none">
+        <div class="session-card" style="background:linear-gradient(135deg,rgba(108,99,255,.08),rgba(255,101,132,.06));border-color:rgba(108,99,255,.2)">
+          <div class="text-center">
+            <div style="font-size:2.5rem">🏆</div>
+            <h6 class="fw-700 mt-2">You're Eligible!</h6>
+            <p style="font-size:.83rem;color:var(--text-muted)" class="mb-3">Pass the quiz to earn your certificate</p>
+            <button class="btn btn-primary-custom w-100"
+              onclick="requestCertificate(parseInt(document.getElementById('selected-skill-id').value))">
+              <i class="bi bi-award-fill me-2"></i>Get Certificate → Take Quiz
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Progress + History -->
+    <div class="col-lg-7">
+
+      <!-- Progress Card -->
+      <div class="session-card mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-700 mb-0"><i class="bi bi-graph-up-arrow me-2" style="color:var(--primary)"></i>Learning Progress</h5>
+          <span id="ss-status-badge" class="badge bg-primary">📚 In Progress</span>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-4 text-center">
+            <div style="font-size:2rem;font-weight:800;color:var(--primary)" id="ss-sessions-count">0/3</div>
+            <div style="font-size:.75rem;color:var(--text-muted)">Sessions Done</div>
+          </div>
+          <div class="col-4 text-center">
+            <div style="font-size:2rem;font-weight:800;color:var(--secondary)" id="ss-total-time">0 min</div>
+            <div style="font-size:.75rem;color:var(--text-muted)">Total Time</div>
+          </div>
+          <div class="col-4 text-center">
+            <div style="font-size:2rem;font-weight:800;color:#f59e0b">70%</div>
+            <div style="font-size:.75rem;color:var(--text-muted)">Quiz Pass Score</div>
+          </div>
+        </div>
+
+        <div class="mb-1 d-flex justify-content-between">
+          <small class="fw-600">Sessions Progress</small>
+          <small style="color:var(--primary)" id="ss-pct-label">0%</small>
+        </div>
+        <div class="prog-bar-wrap mb-3">
+          <div class="prog-bar-fill" id="ss-progress-bar" style="width:0%" aria-valuenow="0"></div>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+          <div style="background:rgba(40,167,69,.1);color:#1a6e30;border:1px solid rgba(40,167,69,.2);border-radius:8px;padding:.35rem .8rem;font-size:.78rem">
+            <i class="bi bi-check2 me-1"></i>≥3 Sessions
+          </div>
+          <div style="background:rgba(108,99,255,.1);color:var(--primary);border:1px solid rgba(108,99,255,.2);border-radius:8px;padding:.35rem .8rem;font-size:.78rem">
+            <i class="bi bi-clock me-1"></i>≥60 Total Minutes
+          </div>
+          <div style="background:rgba(255,193,7,.1);color:#92681a;border:1px solid rgba(255,193,7,.2);border-radius:8px;padding:.35rem .8rem;font-size:.78rem">
+            <i class="bi bi-star me-1"></i>Pass Quiz ≥70%
+          </div>
+        </div>
+      </div>
+
+      <!-- Session History -->
+      <div class="session-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-700 mb-0"><i class="bi bi-clock-history me-2" style="color:var(--primary)"></i>Session History</h5>
+          <button class="btn btn-sm btn-outline-custom" onclick="loadUserSessions()">
+            <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+          </button>
+        </div>
+        <div id="ss-session-history">
+          <div class="text-center py-4 text-muted">
+            <i class="bi bi-journal-x fs-3 d-block mb-2"></i>No sessions yet. Start your first session!
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ QUIZ MODAL ══════════════ -->
+<div class="modal fade" id="quizModal" tabindex="-1" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <div>
+          <h5 class="modal-title fw-700 mb-0" id="quiz-skill-title">Skill Quiz</h5>
+          <div style="font-size:.78rem;opacity:.85" id="quiz-progress-label">
+            <span id="quiz-answered">0</span> / <span id="quiz-total-q">10</span> answered
+          </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Quiz progress bar (in header area) -->
+      <div style="height:4px;background:rgba(255,255,255,.2)">
+        <div id="quiz-progress-bar" style="height:100%;background:#fff;border-radius:2px;transition:width .3s;width:0%"></div>
+      </div>
+
+      <div class="modal-body p-4">
+
+        <!-- Loading -->
+        <div id="quiz-loading" class="text-center py-5">
+          <div class="spinner-border text-primary mb-3"></div>
+          <div style="color:var(--text-muted)">Generating your quiz…</div>
+        </div>
+
+        <!-- Error -->
+        <div id="quiz-error-container" style="display:none" class="text-center py-4">
+          <div style="font-size:3rem">⚠️</div>
+          <h6 class="fw-700 mt-2">Not Eligible Yet</h6>
+          <p class="text-muted" id="quiz-error-msg"></p>
+          <button class="btn btn-outline-custom" data-bs-dismiss="modal">Close</button>
+        </div>
+
+        <!-- Questions -->
+        <div id="quiz-questions-container" style="display:none">
+          <div id="quiz-questions-list"></div>
+        </div>
+
+        <!-- Result -->
+        <div id="quiz-result-container" style="display:none">
+          <div id="quiz-result-icon" style="font-size:4rem;text-align:center">🎉</div>
+          <div id="quiz-score-circle">
+            <span id="quiz-score-num" style="font-size:1.8rem;font-weight:800;line-height:1">—</span>
+            <span style="font-size:.72rem;opacity:.85">Score</span>
+          </div>
+          <h5 class="fw-700 text-center" id="quiz-result-title">Result</h5>
+          <p class="text-muted text-center" id="quiz-result-msg"></p>
+          <div class="text-center" style="font-size:.85rem;color:var(--text-muted)" id="quiz-correct-display">
+            Correct: <strong id="quiz-correct-num">—</strong>
+          </div>
+
+          <div id="quiz-cert-btn" style="display:none;margin-top:1.4rem">
+            <a id="quiz-cert-link" href="#" target="_blank"
+               class="btn btn-primary-custom w-100" style="font-size:.95rem">
+              <i class="bi bi-award-fill me-2"></i>View &amp; Download Certificate
+            </a>
+          </div>
+
+          <div class="mt-2 text-center">
+            <button class="btn btn-sm btn-outline-custom" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer with submit button -->
+      <div class="modal-footer border-0 pt-0" id="quiz-footer">
+        <button id="quiz-submit-btn" class="btn btn-primary-custom w-100" onclick="submitQuizAnswers()">
+          <i class="bi bi-check-circle-fill me-2"></i>Submit Quiz
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="firebase/firebase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/script.js"></script>
+<script src="js/session-quiz.js"></script>
+<script src="components/chatbot.js"></script>
+<script>
+  // ── Partner selection ──────────────────────────────────────────
+  function selectPartner(el, uid, name, skillId) {
+    document.querySelectorAll('.partner-pill').forEach(p => p.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('selected-teacher-uid').value = uid;
+    document.getElementById('selected-skill-id').value    = skillId;
+    loadUserSessions(skillId);
+  }
+
+  // ── Sync progress bar label ────────────────────────────────────
+  const origUpdateProgress = window.updateProgressUI;
+  window.updateProgressUI = function(prog) {
+    if (origUpdateProgress) origUpdateProgress(prog);
+    const pct = Math.min(100, Math.round((prog.sessions_completed / 3) * 100));
+    const lbl = document.getElementById('ss-pct-label');
+    if (lbl) lbl.textContent = pct + '%';
+  };
+
+  // ── Hide quiz footer when showing result ───────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    const observer = new MutationObserver(() => {
+      const footer = document.getElementById('quiz-footer');
+      const result = document.getElementById('quiz-result-container');
+      if (footer && result) {
+        footer.style.display = result.style.display === 'block' ? 'none' : 'block';
+      }
+    });
+    const resultEl = document.getElementById('quiz-result-container');
+    if (resultEl) observer.observe(resultEl, { attributes: true, attributeFilter: ['style'] });
+
+    // Auto-load sessions for default partner
+    loadUserSessions(5);
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Manage your skill swap requests — sent, received, pending, accepted.">
+  <title>Skill Requests — Skill Swap</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+  <div class="container">
+    <a class="navbar-brand" href="index.html"><i class="bi bi-arrow-left-right me-2"></i>SkillSwap</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#reqNav">
+      <i class="bi bi-list fs-4" style="color:var(--text)"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="reqNav">
+      <ul class="navbar-nav mx-auto gap-1">
+        <li class="nav-item"><a class="nav-link" href="dashboard.html">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="matches.html">Matches</a></li>
+        <li class="nav-item"><a class="nav-link active" href="requests.html">Requests</a></li>
+        <li class="nav-item"><a class="nav-link" href="chat.html">Chat</a></li>
+        <li class="nav-item"><a class="nav-link" href="reviews.html">Reviews</a></li>
+      </ul>
+      <div class="d-flex align-items-center gap-3">
+        <button class="dark-toggle" aria-label="Toggle theme"></button>
+        <i id="themeIcon" class="bi bi-moon-fill" style="color:var(--text-muted);font-size:.9rem"></i>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Page header -->
+<div class="page-header text-white text-center">
+  <div class="container">
+    <h1 class="fw-800 mb-2"><i class="bi bi-send me-2"></i>Skill Swap Requests</h1>
+    <p style="opacity:.85">Manage your incoming and outgoing swap requests</p>
+  </div>
+</div>
+
+<div class="container py-5">
+
+  <!-- Tabs -->
+  <ul class="nav nav-tabs border-0 mb-4 gap-2" id="requestTabs">
+    <li class="nav-item">
+      <button class="nav-link active px-4" data-bs-toggle="tab" data-bs-target="#received" id="receivedTab">
+        <i class="bi bi-inbox me-2"></i>Received
+        <span class="badge bg-danger ms-2" style="font-size:.65rem">2</span>
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link px-4" data-bs-toggle="tab" data-bs-target="#sent" id="sentTab">
+        <i class="bi bi-send me-2"></i>Sent
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link px-4" data-bs-toggle="tab" data-bs-target="#accepted" id="acceptedTab">
+        <i class="bi bi-check-circle me-2"></i>Accepted
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+
+    <!-- RECEIVED -->
+    <div class="tab-pane fade show active" id="received">
+      <div id="receivedList">
+        <!-- Dynamic requests will load here -->
+      </div>
+    </div>
+
+    <!-- SENT -->
+    <div class="tab-pane fade" id="sent">
+      <!-- Dynamic sent requests will load here -->
+    </div>
+
+    <!-- ACCEPTED -->
+    <div class="tab-pane fade" id="accepted">
+      <!-- Dynamic accepted requests will load here -->
+    </div>
+
+  </div><!-- end tab-content -->
+</div>
+
+<!-- Reject modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h6 class="modal-title fw-700">Reject Request?</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body pt-0" style="font-size:.88rem;color:var(--text-muted)">The user will be notified that their request was not accepted.</div>
+      <div class="modal-footer border-0 pt-0">
+        <button class="btn btn-sm btn-outline-custom" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-sm" style="background:#dc3545;color:#fff;border:none;border-radius:20px;font-weight:600;padding:.4rem 1rem" onclick="confirmReject()">Reject</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDK (compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+<script src="firebase/firebase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/script.js"></script>
+<script src="js/api.js"></script>
+<script src="components/chatbot.js"></script>
+<script>
+  let rejectTargetId = null;
+  let requestsData = { received: [], sent: [], accepted: [] };
+
+  // ── Load real requests ───────────────────────────────────────────────────────────
+  (async () => {
+    const firebaseUser = await requireAuth();
+    try {
+      requestsData = await API.getRequests(firebaseUser.uid);
+      renderReceived(requestsData.received);
+      renderSent(requestsData.sent);
+      renderAccepted(requestsData.accepted);
+
+      // Update badge count
+      const pending = requestsData.received.filter(r => r.status === 'pending').length;
+      const badge = document.querySelector('#receivedTab .badge');
+      if (badge) badge.textContent = pending;
+      if (!pending) badge && badge.remove();
+    } catch (e) {
+      console.warn('Requests load failed', e);
+      // Keep static demo content
+    }
+  })();
+
+  function timeAgo(dateStr) {
+    const sec = Math.floor((Date.now() - new Date(dateStr)) / 1000);
+    if (sec < 60)   return 'just now';
+    if (sec < 3600) return `${Math.floor(sec/60)}m ago`;
+    if (sec < 86400)return `${Math.floor(sec/3600)}h ago`;
+    return `${Math.floor(sec/86400)}d ago`;
+  }
+
+  function renderReceived(items) {
+    const list = document.getElementById('receivedList');
+    if (!items.length) { list.innerHTML = '<p style="color:var(--text-muted);font-size:.88rem">No requests received yet.</p>'; return; }
+    list.innerHTML = items.map(r => {
+      const o = r.other_user;
+      const initial = o?.name?.charAt(0)?.toUpperCase() || '?';
+      const teaches = r.other_teaches.join(', ') || '—';
+      const wants   = r.other_wants.join(', ')   || '—';
+      const isPending = r.status === 'pending';
+      return `
+        <div class="request-item" id="req-${r.request_id}">
+          <div class="avatar-placeholder flex-shrink-0">${initial}</div>
+          <div class="flex-grow-1 min-w-0">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <span class="fw-700">${o?.name || 'Unknown'}</span>
+              <span class="status-badge status-${r.status}">
+                <i class="bi bi-${r.status === 'pending' ? 'clock-fill' : r.status === 'accepted' ? 'check-circle-fill' : 'x-circle-fill'}"></i>
+                ${r.status.charAt(0).toUpperCase() + r.status.slice(1)}
+              </span>
+            </div>
+            <div class="skill-cloud mt-1 flex-wrap">
+              <span class="badge-skill" style="font-size:.72rem"><i class="bi bi-mortarboard"></i>Teaches: ${teaches}</span>
+              <span class="badge-skill" style="background:rgba(255,101,132,.1);color:var(--secondary);border-color:rgba(255,101,132,.2);font-size:.72rem"><i class="bi bi-lightbulb"></i>Wants: ${wants}</span>
+            </div>
+            ${r.message ? `<p style="font-size:.82rem;color:var(--text-muted);margin-top:.4rem;margin-bottom:0">"${r.message}"</p>` : ''}
+            <small style="color:var(--text-muted);font-size:.72rem"><i class="bi bi-clock me-1"></i>${timeAgo(r.created_at)}</small>
+          </div>
+          ${isPending ? `
+          <div class="d-flex flex-column gap-2 flex-shrink-0">
+            <button class="btn btn-sm" style="background:rgba(40,167,69,.1);color:#1a6e30;border:1px solid rgba(40,167,69,.2);border-radius:10px;font-weight:600"
+              onclick="acceptReq(${r.request_id}, '${o?.firebase_uid || ''}', this)">
+              <i class="bi bi-check-lg me-1"></i>Accept
+            </button>
+            <button class="btn btn-sm" style="background:rgba(220,53,69,.08);color:#9e1f2e;border:1px solid rgba(220,53,69,.15);border-radius:10px;font-weight:600"
+              onclick="rejectReqModal(${r.request_id})">
+              <i class="bi bi-x-lg me-1"></i>Reject
+            </button>
+          </div>` : ''}
+        </div>`;
+    }).join('');
+  }
+
+  function renderSent(items) {
+    const pane = document.getElementById('sent');
+    if (!items.length) { pane.innerHTML = '<p style="color:var(--text-muted);font-size:.88rem">No requests sent yet.</p>'; return; }
+    pane.innerHTML = items.map(r => {
+      const o = r.other_user;
+      const initial = o?.name?.charAt(0)?.toUpperCase() || '?';
+      const teaches = r.other_teaches.join(' → ');
+      return `
+        <div class="request-item">
+          <div class="avatar-placeholder flex-shrink-0">${initial}</div>
+          <div class="flex-grow-1">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <span class="fw-700">${o?.name || 'Unknown'}</span>
+              <span class="status-badge status-${r.status}">
+                <i class="bi bi-${r.status === 'pending' ? 'clock-fill' : r.status === 'accepted' ? 'check-circle-fill' : 'x-circle-fill'}"></i>
+                ${r.status.charAt(0).toUpperCase() + r.status.slice(1)}
+              </span>
+            </div>
+            <div class="skill-cloud mt-1">
+              <span class="badge-skill" style="font-size:.72rem">${teaches || 'Skill Swap'}</span>
+            </div>
+            <small style="color:var(--text-muted);font-size:.72rem"><i class="bi bi-clock me-1"></i>${timeAgo(r.created_at)}</small>
+          </div>
+          ${r.status === 'accepted' ? `<a href="chat.html" class="btn btn-sm btn-primary-custom flex-shrink-0"><i class="bi bi-chat-dots me-1"></i>Chat Now</a>` : ''}
+          ${r.status === 'pending'  ? `<button class="btn btn-sm flex-shrink-0" style="border:1.5px solid var(--danger);color:var(--danger);border-radius:10px" onclick="showToast('Use requests page to manage','info')"><i class="bi bi-x-circle me-1"></i>Cancel</button>` : ''}
+          ${r.status === 'rejected' ? `<a href="matches.html" class="btn btn-sm btn-outline-custom flex-shrink-0">Find Another</a>` : ''}
+        </div>`;
+    }).join('');
+  }
+
+  function renderAccepted(items) {
+    const pane = document.getElementById('accepted');
+    if (!items.length) { pane.innerHTML = '<p style="color:var(--text-muted);font-size:.88rem">No active swaps yet.</p>'; return; }
+    pane.innerHTML = items.map(r => {
+      const o = r.other_user;
+      const initial = o?.name?.charAt(0)?.toUpperCase() || '?';
+      return `
+        <div class="request-item">
+          <div class="avatar-placeholder flex-shrink-0">${initial}</div>
+          <div class="flex-grow-1">
+            <div class="d-flex align-items-center flex-wrap gap-2">
+              <span class="fw-700">${o?.name || 'Unknown'}</span>
+              <span class="status-badge status-accepted"><i class="bi bi-check-circle-fill"></i> Active Swap</span>
+            </div>
+            <div class="skill-cloud mt-1">
+              <span class="badge-skill" style="font-size:.72rem"><i class="bi bi-arrow-left-right"></i>${r.other_teaches.join(', ')} ⇔ ${r.other_wants.join(', ')}</span>
+            </div>
+          </div>
+          <div class="d-flex flex-column gap-2 flex-shrink-0">
+            <a href="chat.html" class="btn btn-sm btn-primary-custom"><i class="bi bi-chat-dots me-1"></i>Chat</a>
+            <a href="reviews.html" class="btn btn-sm btn-outline-custom"><i class="bi bi-star me-1"></i>Review</a>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // ── Accept / Reject ──────────────────────────────────────────────────────────────
+  async function acceptReq(requestId, senderUid, btn) {
+    const itemDOM = btn.closest('.request-item');
+    const name = itemDOM ? itemDOM.querySelector('.fw-700').innerText : 'Partner';
+    try {
+      await API.acceptRequest(requestId);
+      const myName = (ssAuth.currentUser && ssAuth.currentUser.displayName) ? ssAuth.currentUser.displayName : 'Your Partner';
+      await API.addNotification(senderUid, 'request', `🔄 ${myName} accepted your skill swap request!`);
+      
+      // Update badge in DOM
+      const item = document.getElementById(`req-${requestId}`);
+      if (item) {
+        const badge = item.querySelector('.status-badge');
+        badge.className = 'status-badge status-accepted';
+        badge.innerHTML = '<i class="bi bi-check-circle-fill"></i> Accepted';
+        item.querySelectorAll('button').forEach(b => b.remove());
+        const chatBtn = document.createElement('a');
+        chatBtn.href = 'chat.html?chat_with=' + senderUid;
+        chatBtn.className = 'btn btn-sm btn-primary-custom flex-shrink-0';
+        chatBtn.innerHTML = '<i class="bi bi-chat-dots me-1"></i>Chat Now';
+        item.appendChild(chatBtn);
+      }
+      showToast(`You accepted ${name}'s request!`, 'success');
+    } catch (e) {
+      showToast(e.message || 'Failed to accept request.', 'danger');
+    }
+  }
+
+  function rejectReqModal(requestId) {
+    rejectTargetId = requestId;
+    new bootstrap.Modal(document.getElementById('rejectModal')).show();
+  }
+
+  async function confirmReject() {
+    bootstrap.Modal.getInstance(document.getElementById('rejectModal')).hide();
+    if (!rejectTargetId) return;
+    try {
+      await API.rejectRequest(rejectTargetId);
+      const item = document.getElementById(`req-${rejectTargetId}`);
+      if (item) {
+        const badge = item.querySelector('.status-badge');
+        badge.className = 'status-badge status-rejected';
+        badge.innerHTML = '<i class="bi bi-x-circle-fill"></i> Rejected';
+        item.querySelectorAll('button').forEach(b => b.remove());
+      }
+      showToast('Request rejected', 'danger');
+    } catch (e) {
+      showToast(e.message || 'Failed to reject request.', 'danger');
+    }
+  }
+</script>
+</body>
+</html>

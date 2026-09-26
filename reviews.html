@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Rate and review your skill swap partners.">
+  <title>Reviews — Skill Swap</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .star-select { display:flex; gap:.3rem; }
+    .star-select label {
+      font-size:2rem; color:var(--border); cursor:pointer; transition:var(--trans);
+      user-select:none; -webkit-user-select:none;
+    }
+    .star-select label:hover { color:var(--warning); transform:scale(1.2); }
+    .star-select label.active { color:var(--warning); }
+  </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+  <div class="container">
+    <a class="navbar-brand" href="index.html"><i class="bi bi-arrow-left-right me-2"></i>SkillSwap</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#revNav">
+      <i class="bi bi-list fs-4" style="color:var(--text)"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="revNav">
+      <ul class="navbar-nav mx-auto gap-1">
+        <li class="nav-item"><a class="nav-link" href="dashboard.html">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="matches.html">Matches</a></li>
+        <li class="nav-item"><a class="nav-link" href="requests.html">Requests</a></li>
+        <li class="nav-item"><a class="nav-link active" href="reviews.html">Reviews</a></li>
+      </ul>
+      <div class="d-flex align-items-center gap-3">
+        <button class="dark-toggle" aria-label="Toggle theme"></button>
+        <i id="themeIcon" class="bi bi-moon-fill" style="color:var(--text-muted);font-size:.9rem"></i>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Page header -->
+<div class="page-header text-white text-center">
+  <div class="container">
+    <h1 class="fw-800 mb-2"><i class="bi bi-star me-2"></i>Reviews &amp; Ratings</h1>
+    <p style="opacity:.85">Share your experience and help the community</p>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-4">
+
+    <!-- Left: Write a review -->
+    <div class="col-lg-5">
+      <div class="card-custom p-4 position-sticky" style="top:90px">
+        <h5 class="fw-700 mb-1">Write a Review</h5>
+        <p style="color:var(--text-muted);font-size:.88rem" class="mb-4">Rate a partner after completing your skill swap</p>
+
+        <!-- Pick user -->
+        <div class="mb-3">
+          <label class="form-label-custom">Select Partner</label>
+          <select class="form-select form-control-custom" id="reviewPartner">
+            <option value="">— Choose a swap partner —</option>
+          </select>
+        </div>
+
+        <!-- Star rating -->
+        <div class="mb-3">
+          <label class="form-label-custom">Your Rating</label>
+          <div class="star-select" id="starSelect">
+            <label data-val="1"><i class="bi bi-star-fill"></i></label>
+            <label data-val="2"><i class="bi bi-star-fill"></i></label>
+            <label data-val="3"><i class="bi bi-star-fill"></i></label>
+            <label data-val="4"><i class="bi bi-star-fill"></i></label>
+            <label data-val="5"><i class="bi bi-star-fill"></i></label>
+          </div>
+          <input type="hidden" id="ratingValue" value="0">
+          <div id="ratingLabel" style="color:var(--text-muted);font-size:.82rem;margin-top:.3rem">Click to rate</div>
+        </div>
+
+        <!-- Skill quality -->
+        <div class="mb-3">
+          <label class="form-label-custom">Skill Quality</label>
+          <div class="d-flex flex-wrap gap-2">
+            <button type="button" class="skill-tag skill-tag-purple tag-toggle" onclick="toggleTag(this)">Knowledgeable</button>
+            <button type="button" class="skill-tag skill-tag-purple tag-toggle" onclick="toggleTag(this)">Patient</button>
+            <button type="button" class="skill-tag skill-tag-purple tag-toggle" onclick="toggleTag(this)">Well-Explained</button>
+            <button type="button" class="skill-tag skill-tag-purple tag-toggle" onclick="toggleTag(this)">Responsive</button>
+            <button type="button" class="skill-tag skill-tag-purple tag-toggle" onclick="toggleTag(this)">Punctual</button>
+            <button type="button" class="skill-tag skill-tag-purple tag-toggle" onclick="toggleTag(this)">Highly Recommend</button>
+          </div>
+        </div>
+
+        <!-- Feedback message -->
+        <div class="mb-4">
+          <label class="form-label-custom">Feedback Message</label>
+          <textarea class="form-control form-control-custom" rows="4" id="reviewText" placeholder="Share your experience with this skill swap…"></textarea>
+        </div>
+
+        <button class="btn btn-primary-custom w-100" onclick="submitReview()">
+          <i class="bi bi-send-fill me-2"></i>Submit Review
+        </button>
+      </div>
+    </div>
+
+    <!-- Right: Existing reviews -->
+    <div class="col-lg-7">
+      <!-- Review summary bar -->
+      <div class="card-custom p-4 mb-4">
+        <div class="d-flex align-items-center gap-4">
+          <div class="text-center">
+            <div id="statAvg" style="font-size:3.5rem;font-weight:800;color:var(--primary);line-height:1">0.0</div>
+            <div id="statStars" class="stars" style="font-size:1.1rem">☆☆☆☆☆</div>
+            <div id="statTotal" style="color:var(--text-muted);font-size:.8rem;margin-top:.2rem">Based on 0 reviews</div>
+          </div>
+          <div class="flex-grow-1" id="statBars">
+            <!-- Bars appended dynamically -->
+          </div>
+        </div>
+        <div class="d-flex flex-wrap gap-2 mt-3 pt-3" style="border-top:1px solid var(--border)">
+          <span class="badge-skill"><i class="bi bi-check-circle text-success me-1"></i>Knowledgeable</span>
+          <span class="badge-skill"><i class="bi bi-check-circle text-success me-1"></i>Patient</span>
+          <span class="badge-skill"><i class="bi bi-check-circle text-success me-1"></i>Responsive</span>
+          <span class="badge-skill"><i class="bi bi-check-circle text-success me-1"></i>Well-Explained</span>
+        </div>
+      </div>
+
+      <!-- Review cards -->
+      <div id="reviewsList">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDK (compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+<script src="firebase/firebase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/script.js"></script>
+<script src="js/api.js"></script>
+<script src="components/chatbot.js"></script>
+<script>
+  // ── Star rating interaction (unchanged UI) ─────────────────────────────────────
+  let currentRating = 0;
+  const labels = ['','Poor','Fair','Good','Very Good','Excellent'];
+  document.querySelectorAll('#starSelect label').forEach((label, i) => {
+    const val = i + 1;
+    label.addEventListener('click', () => {
+      currentRating = val;
+      document.getElementById('ratingValue').value = val;
+      document.getElementById('ratingLabel').textContent = `${val}/5 — ${labels[val]}`;
+      updateStars(val);
+    });
+    label.addEventListener('mouseenter', () => updateStars(val));
+    label.addEventListener('mouseleave', () => updateStars(currentRating));
+  });
+
+  function updateStars(n) {
+    document.querySelectorAll('#starSelect label').forEach((l, i) => {
+      l.style.color     = i < n ? 'var(--warning)' : 'var(--border)';
+      l.style.transform = i < n ? 'scale(1.1)' : '';
+    });
+  }
+
+  function toggleTag(btn) {
+    btn.classList.toggle('active');
+    if (btn.classList.contains('active')) {
+      btn.style.background = 'var(--primary)';
+      btn.style.color      = '#fff';
+      btn.style.borderColor = 'var(--primary)';
+    } else {
+      btn.style = '';
+    }
+  }
+
+  // ── Auth + load own reviews ───────────────────────────────────────────────────
+  let currentUID = null;
+
+  (async () => {
+    const firebaseUser = await requireAuth();
+    currentUID = firebaseUser.uid;
+    try {
+      // Load user's received reviews
+      const data = await API.getReviews(currentUID);
+      renderReviews(data.reviews, data.summary);
+      
+      // Load partners for dropdown
+      const partners = await API.getChatPartners(currentUID);
+      const sel = document.getElementById('reviewPartner');
+      partners.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.firebase_uid;
+        opt.textContent = `${p.name} (${p.teaches || 'General'} ↔ ${p.wants || 'General'})`;
+        sel.appendChild(opt);
+      });
+    } catch (e) {
+      console.warn('Reviews load failed', e);
+    }
+  })();
+
+  function timeAgo(dateStr) {
+    const sec = Math.floor((Date.now() - new Date(dateStr)) / 1000);
+    if (sec < 60)    return 'just now';
+    if (sec < 3600)  return `${Math.floor(sec/60)}m ago`;
+    if (sec < 86400) return `${Math.floor(sec/3600)}h ago`;
+    return `${Math.floor(sec/86400)}d ago`;
+  }
+
+  function renderReviews(reviews, summary) {
+    // Update summary stats
+    if (summary) {
+      const avg = (summary.avg_rating || 0).toFixed(1);
+      document.getElementById('statAvg').textContent = avg;
+      document.getElementById('statStars').textContent = '★'.repeat(Math.round(avg)) + '☆'.repeat(5 - Math.round(avg));
+      document.getElementById('statTotal').textContent = `Based on ${summary.total} reviews`;
+      
+      const barsHtml = [5,4,3,2,1].map(r => {
+        const count = summary.breakdown[r] || 0;
+        const pct = summary.total > 0 ? (count / summary.total) * 100 : 0;
+        return `
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <span style="font-size:.8rem;width:14px">${r}</span>
+            <div class="progress-custom flex-grow-1"><div class="progress-bar" style="width:${pct}%"></div></div>
+            <span style="font-size:.78rem;color:var(--text-muted);width:28px">${count}</span>
+          </div>
+        `;
+      }).join('');
+      document.getElementById('statBars').innerHTML = barsHtml;
+    }
+
+    // Replace review list with real data entirely
+    const list = document.getElementById('reviewsList');
+    if (!reviews || reviews.length === 0) {
+      list.innerHTML = '<div class="text-center text-muted py-5">No reviews yet.</div>';
+      return;
+    }
+    
+    list.innerHTML = reviews.map(r => {
+      const initial = r.reviewer_name?.charAt(0)?.toUpperCase() || '?';
+      const stars   = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+      const tags    = (r.tags || []).filter(Boolean).map(t =>
+        `<span class="badge-skill" style="font-size:.72rem;background:rgba(40,167,69,.1);color:#1a6e30;border-color:rgba(40,167,69,.2)">${t.trim()}</span>`
+      ).join('');
+      return `
+        <div class="review-card mb-3">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div class="d-flex align-items-center gap-3">
+              <div class="avatar-placeholder" style="width:42px;height:42px;font-size:1rem;background:linear-gradient(135deg,#6c63ff,#a78bfa)">${initial}</div>
+              <div>
+                <div class="fw-700">${r.reviewer_name}</div>
+                <div class="stars" style="font-size:.85rem">${stars}</div>
+              </div>
+            </div>
+            <small style="color:var(--text-muted)">${timeAgo(r.created_at)}</small>
+          </div>
+          ${tags ? `<div class="d-flex flex-wrap gap-1 mb-2">${tags}</div>` : ''}
+          <p style="color:var(--text-muted);font-size:.88rem;margin-bottom:.5rem">"${r.comment || ''}"</p>
+        </div>`;
+    }).join('');
+  }
+
+  // ── Submit review via API ───────────────────────────────────────────────────────
+  async function submitReview() {
+    const partnerSelect = document.getElementById('reviewPartner');
+    const partner = partnerSelect.value;
+    const rating  = document.getElementById('ratingValue').value;
+    const text    = document.getElementById('reviewText').value.trim();
+    const selectedTags = [...document.querySelectorAll('.tag-toggle.active')].map(t => t.textContent);
+
+    const reviewedUID = partnerSelect.value;
+    if (!reviewedUID) { showToast('Please select a partner', 'warning'); return; }
+    if (rating < 1)   { showToast('Please give a star rating', 'warning'); return; }
+    if (!text)        { showToast('Please write a review message', 'warning'); return; }
+
+    const submitBtn = event.currentTarget || document.querySelector('.btn-primary-custom');
+    if (submitBtn) submitBtn.disabled = true;
+
+    try {
+      await API.addReview(reviewedUID, +rating, text, selectedTags.join(','));
+      showToast('Review submitted! Thank you.', 'success');
+      
+      // Reload reviews seamlessly
+      const data = await API.getReviews(currentUID);
+      renderReviews(data.reviews, data.summary);
+
+      // Reset form
+      partnerSelect.value = '';
+      document.getElementById('reviewText').value = '';
+      document.getElementById('ratingValue').value = 0;
+      document.getElementById('ratingLabel').textContent = 'Click to rate';
+      currentRating = 0;
+      updateStars(0);
+      document.querySelectorAll('.tag-toggle.active').forEach(t => { t.classList.remove('active'); t.style = ''; });
+
+    } catch (e) {
+      showToast(e.message || 'Failed to submit review.', 'danger');
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
+    }
+  }
+</script>
+</body>
+</html>
