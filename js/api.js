@@ -25,6 +25,7 @@ window.requireAuth = function () {
         window.location.href = 'login.html';
       } else {
         window.currentFirebaseUser = user;
+        resolve(user);
         
             // Start online heartbeat
         if (!window.statusInterval) {
