@@ -8,6 +8,7 @@
     A modern web application where users exchange skills instead of money!
   </p>
 
+
   <p align="center">
     <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5" />
     <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3" />
@@ -25,6 +26,11 @@
     <img src="https://img.shields.io/badge/Open_Source-❤️-red?style=flat-square" alt="Open Source" />
   </p>
 </div>
+
+## 🌐 Live Demo
+
+> **Website:**  
+> [![Live Demo](https://img.shields.io/badge/Launch-skillswap.wuaze.com-blue?style=for-the-badge)](https://skillswap.wuaze.com)
 
 ---
 
@@ -152,26 +158,52 @@ SkillSwap
 
 ## 🏛️ System Architecture
 
-**User Request Workflow:**
+### High-Level Architecture
+
+SkillSwap follows a modern three-layer architecture consisting of:
+
+- **Presentation Layer**
+  - Responsive HTML5 interface
+  - CSS3 styling
+  - JavaScript interactions
+  - User Dashboard
+
+- **Application Layer**
+  - PHP Backend
+  - Business Logic
+  - Matching Engine
+  - Chat Module
+  - Review System
+  - Notification System
+
+- **Data Layer**
+  - MySQL Database
+  - Firebase Authentication
+  - Firebase User Management
 
 ```text
-User 
-  ↓
-Firebase Authentication (Google / GitHub / Email)
-  ↓
-PHP Backend (API Layer & Logic)
-  ↓
-MySQL (Data Storage)
-  ↓
-Dashboard (State rendered)
-  ↓
-Matching Algorithm (Finds Complementary Users)
-  ↓
-Chat System (WebSocket / Long Polling)
-  ↓
-Reviews & Ratings
-  ↓
-Notifications (Alerts & Updates)
+                User
+                  │
+                  ▼
+     HTML • CSS • JavaScript
+                  │
+                  ▼
+ Firebase Authentication
+                  │
+                  ▼
+        PHP Backend APIs
+                  │
+      ┌───────────┼───────────┐
+      │           │           │
+      ▼           ▼           ▼
+ Matching     Chat      Notifications
+      │           │           │
+      └───────────┼───────────┘
+                  ▼
+        Reviews & Ratings
+                  │
+                  ▼
+          MySQL Database
 ```
 
 ---
@@ -229,7 +261,7 @@ php -S localhost:8000
 ```
 
 ### 7. Open Application
-Navigate to **[http://localhost:8000](http://localhost:8000)** in your browser!
+Navigate to **[https://skillswap.wuaze.com](https://skillswap.wuaze.com)** in your browser!
 
 ---
 
